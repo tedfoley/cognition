@@ -1,0 +1,66 @@
+name: 'CodeQL Remediation Orchestrator'
+description: 'Automatically fix CodeQL security issues using Devin AI with intelligent batching and real-time dashboard'
+author: 'Your Name'
+
+branding:
+  icon: 'shield'
+  color: 'green'
+
+inputs:
+  devin_api_key:
+    description: 'Devin API key for authentication'
+    required: true
+  github_token:
+    description: 'GitHub token with security_events and repo scope'
+    required: true
+  batching_strategy:
+    description: 'Batching strategy: severity-then-cwe, severity-only, by-file, by-cwe, by-complexity'
+    required: false
+    default: 'severity-then-cwe'
+  max_batch_size:
+    description: 'Maximum number of alerts per batch'
+    required: false
+    default: '5'
+  max_parallel_sessions:
+    description: 'Maximum number of parallel Devin sessions'
+    required: false
+    default: '3'
+  min_confidence_threshold:
+    description: 'Minimum confidence score to proceed with fix (0.0-1.0)'
+    required: false
+    default: '0.7'
+  severity_filter:
+    description: 'Comma-separated list of severities to process'
+    required: false
+    default: 'critical,high,medium'
+  min_alerts_threshold:
+    description: 'Minimum number of alerts before processing (to avoid batch size of 1)'
+    required: false
+    default: '3'
+  repository:
+    description: 'Repository to analyze (owner/repo format). Defaults to current repository.'
+    required: false
+  dashboard_branch:
+    description: 'Branch to publish dashboard data to'
+    required: false
+    default: 'gh-pages'
+  dry_run:
+    description: 'If true, analyze and plan but do not create Devin sessions or PRs'
+    required: false
+    default: 'false'
+
+outputs:
+  session_count:
+    description: 'Number of Devin sessions created'
+  pr_count:
+    description: 'Number of PRs created'
+  alerts_processed:
+    description: 'Number of alerts processed'
+  dashboard_url:
+    description: 'URL to the remediation dashboard'
+  run_id:
+    description: 'Unique identifier for this remediation run'
+
+runs:
+  using: 'node20'
+  main: 'dist-action/index.js'

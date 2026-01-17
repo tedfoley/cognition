@@ -1,0 +1,77 @@
+name: CodeQL Remediation
+
+on:
+  # Trigger after CodeQL analysis completes
+  workflow_run:
+    workflows: ["CodeQL"]
+    types:
+      - completed
+
+  # Weekly scheduled run to accumulate alerts
+  schedule:
+    - cron: '0 0 * * 0'  # Every Sunday at midnight
+
+  # Manual trigger for on-demand remediation
+  workflow_dispatch:
+    inputs:
+      batching_strategy:
+        description: 'Batching strategy'
+        required: false
+        default: 'severity-then-cwe'
+        type: choice
+        options:
+          - severity-then-cwe
+          - severity-only
+          - by-file
+          - by-cwe
+          - by-complexity
+      max_parallel_sessions:
+        description: 'Maximum parallel Devin sessions'
+        required: false
+        default: '3'
+      dry_run:
+        description: 'Dry run (analyze only, no fixes)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  security-events: read
+  pull-requests: write
+  pages: write
+
+jobs:
+  remediate:
+    runs-on: ubuntu-latest
+    # Only run if CodeQL completed successfully, or if triggered manually/scheduled
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name != 'workflow_run' }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run CodeQL Remediation Orchestrator
+        uses: your-org/codeql-remediation-orchestrator@v1
+        id: remediate
+        with:
+          devin_api_key: ${{ secrets.DEVIN_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          batching_strategy: ${{ github.event.inputs.batching_strategy || 'severity-then-cwe' }}
+          max_batch_size: 5
+          max_parallel_sessions: ${{ github.event.inputs.max_parallel_sessions || '3' }}
+          min_confidence_threshold: 0.7
+          severity_filter: 'critical,high,medium'
+          min_alerts_threshold: 3
+          dashboard_branch: 'gh-pages'
+          dry_run: ${{ github.event.inputs.dry_run || 'false' }}
+
+      - name: Summary
+        run: |
+          echo "## CodeQL Remediation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Alerts Processed:** ${{ steps.remediate.outputs.alerts_processed }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Sessions Created:** ${{ steps.remediate.outputs.session_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **PRs Created:** ${{ steps.remediate.outputs.pr_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dashboard:** ${{ steps.remediate.outputs.dashboard_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Run ID:** ${{ steps.remediate.outputs.run_id }}" >> $GITHUB_STEP_SUMMARY
