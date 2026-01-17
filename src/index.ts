@@ -5,7 +5,6 @@ import { BatchingEngine } from './batchingEngine';
 import { DevinOrchestrator } from './devinOrchestrator';
 import { ConfidenceScorer } from './confidenceScorer';
 import { LearningStoreManager } from './learningStore';
-import { PRGenerator } from './prGenerator';
 import { DashboardPublisher } from './dashboardPublisher';
 import {
   RemediationRun,
@@ -52,7 +51,6 @@ async function run(): Promise<void> {
     const batchingEngine = new BatchingEngine(batchingStrategy, maxBatchSize);
     const learningStoreManager = new LearningStoreManager(githubToken, repository);
     const dashboardPublisher = new DashboardPublisher(githubToken, repository, dashboardBranch);
-    const prGenerator = new PRGenerator(repository);
 
     core.info('Fetching CodeQL alerts...');
     const alerts = await alertFetcher.fetchAlerts(severityFilter);
