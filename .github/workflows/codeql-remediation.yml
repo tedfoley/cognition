@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run CodeQL Remediation Orchestrator
-        uses: your-org/codeql-remediation-orchestrator@v1
+        uses: ./
         id: remediate
         with:
           devin_api_key: ${{ secrets.DEVIN_API_KEY }}

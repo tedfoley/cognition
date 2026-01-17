@@ -133,7 +133,7 @@ async function run(): Promise<void> {
       return;
     }
 
-    const devinOrchestrator = new DevinOrchestrator(devinApiKey, maxParallelSessions, repository);
+    const devinOrchestrator = new DevinOrchestrator(devinApiKey, maxParallelSessions, repository, githubToken);
     const confidenceScorer = new ConfidenceScorer(githubToken, repository, learningStore);
 
     const checkPaused = async (): Promise<boolean> => {

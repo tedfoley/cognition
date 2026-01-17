@@ -7,13 +7,15 @@ export type BatchingStrategy =
   | 'by-cwe'
   | 'by-complexity';
 
+// Devin API status_enum values
 export type SessionStatus = 
   | 'pending'
-  | 'running'
-  | 'blocked'
-  | 'stopped'
-  | 'completed'
-  | 'failed';
+  | 'working'      // Devin is actively working
+  | 'blocked'      // Devin is waiting for user input
+  | 'finished'     // Devin completed the task
+  | 'expired'      // Session timed out
+  | 'suspended'    // Session was suspended
+  | 'resumed';     // Session was resumed
 
 export type FixOutcome = 
   | 'pending'
@@ -80,6 +82,7 @@ export interface DevinSession {
   status: SessionStatus;
   batchId: string;
   structuredOutput?: DevinStructuredOutput;
+  prUrl?: string;  // PR URL from Devin API pull_request.url field
   createdAt: string;
   updatedAt: string;
   messages: DevinMessage[];
