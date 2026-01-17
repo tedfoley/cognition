@@ -362,6 +362,8 @@ export class DashboardPublisher {
       return (
         <div className="container mx-auto px-4 py-8">
           <Header run={run} controlState={controlState} />
+          <ControlPanel run={run} controlState={controlState} />
+          <ProgressOverview run={run} />
           <SecurityPosture run={run} />
           <BatchProgress batches={run.batches} />
           <SessionList sessions={run.sessions} />
@@ -401,6 +403,130 @@ export class DashboardPublisher {
             <StatCard label="Processed" value={run.alertsProcessed} />
             <StatCard label="Batches" value={run.batches.length} />
             <StatCard label="PRs Created" value={run.prsCreated.length} />
+          </div>
+        </div>
+      );
+    }
+
+    function ControlPanel({ run, controlState }) {
+      const [showControlInfo, setShowControlInfo] = useState(false);
+      
+      const handlePauseClick = () => {
+        setShowControlInfo(true);
+      };
+
+      const handleResumeClick = () => {
+        setShowControlInfo(true);
+      };
+
+      if (run.status === 'completed' || run.status === 'failed') {
+        return null;
+      }
+
+      return (
+        <div className="mb-6 bg-gray-800 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Controls</h2>
+            <div className="flex gap-3">
+              {!controlState?.paused ? (
+                <button
+                  onClick={handlePauseClick}
+                  className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg font-medium transition-colors"
+                >
+                  Pause
+                </button>
+              ) : (
+                <button
+                  onClick={handleResumeClick}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium transition-colors"
+                >
+                  Resume
+                </button>
+              )}
+            </div>
+          </div>
+          {showControlInfo && (
+            <div className="mt-3 p-3 bg-gray-700 rounded-lg text-sm">
+              <p className="text-yellow-400 font-medium mb-2">Manual Control Required</p>
+              <p className="text-gray-300">
+                To pause/resume the remediation run, please contact your repository admin or 
+                trigger a workflow dispatch event with the appropriate control action.
+              </p>
+              <p className="text-gray-400 mt-2">
+                Alternatively, you can manually update the control state file at: 
+                <code className="ml-1 bg-gray-600 px-1 rounded">data/control-state.json</code>
+              </p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function ProgressOverview({ run }) {
+      // Calculate estimated time to completion
+      const completedBatches = run.batches.filter(b => b.status === 'completed' || b.status === 'failed').length;
+      const inProgressBatches = run.batches.filter(b => b.status === 'in_progress').length;
+      const pendingBatches = run.batches.filter(b => b.status === 'pending').length;
+      const totalBatches = run.batches.length;
+      
+      // Estimate based on average time per batch (assume ~15 min per batch if no data)
+      const AVG_MINUTES_PER_BATCH = 15;
+      const estimatedMinutesRemaining = (pendingBatches + inProgressBatches * 0.5) * AVG_MINUTES_PER_BATCH;
+      
+      // Calculate actual average if we have completed batches with timing data
+      let actualAvgMinutes = AVG_MINUTES_PER_BATCH;
+      const completedWithTiming = run.batches.filter(b => b.startedAt && b.completedAt);
+      if (completedWithTiming.length > 0) {
+        const totalMinutes = completedWithTiming.reduce((sum, b) => {
+          const start = new Date(b.startedAt).getTime();
+          const end = new Date(b.completedAt).getTime();
+          return sum + (end - start) / 60000;
+        }, 0);
+        actualAvgMinutes = totalMinutes / completedWithTiming.length;
+      }
+      
+      const refinedEstimate = (pendingBatches + inProgressBatches * 0.5) * actualAvgMinutes;
+      const progressPercent = totalBatches > 0 ? (completedBatches / totalBatches) * 100 : 0;
+
+      const formatTime = (minutes) => {
+        if (minutes < 1) return 'Less than a minute';
+        if (minutes < 60) return \`~\${Math.round(minutes)} min\`;
+        const hours = Math.floor(minutes / 60);
+        const mins = Math.round(minutes % 60);
+        return \`~\${hours}h \${mins}m\`;
+      };
+
+      return (
+        <div className="mb-6 bg-gray-800 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">Progress Overview</h2>
+            <span className="text-2xl font-bold text-blue-400">{progressPercent.toFixed(0)}%</span>
+          </div>
+          
+          <div className="w-full bg-gray-700 rounded-full h-4 mb-4">
+            <div 
+              className="bg-blue-500 h-4 rounded-full transition-all duration-500"
+              style={{ width: \`\${progressPercent}%\` }}
+            ></div>
+          </div>
+          
+          <div className="grid grid-cols-4 gap-4 text-center text-sm">
+            <div>
+              <p className="text-gray-400">Completed</p>
+              <p className="text-xl font-bold text-green-400">{completedBatches}</p>
+            </div>
+            <div>
+              <p className="text-gray-400">In Progress</p>
+              <p className="text-xl font-bold text-blue-400">{inProgressBatches}</p>
+            </div>
+            <div>
+              <p className="text-gray-400">Pending</p>
+              <p className="text-xl font-bold text-gray-400">{pendingBatches}</p>
+            </div>
+            <div>
+              <p className="text-gray-400">Est. Time Left</p>
+              <p className="text-xl font-bold text-yellow-400">{formatTime(refinedEstimate)}</p>
+            </div>
           </div>
         </div>
       );
@@ -541,8 +667,10 @@ export class DashboardPublisher {
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium">Session {session.sessionId.slice(0, 8)}...</span>
                   <span className={\`px-2 py-1 rounded text-xs \${
-                    session.status === 'running' ? 'bg-blue-500' :
-                    session.status === 'stopped' ? 'bg-green-500' : 'bg-gray-500'
+                    session.status === 'working' ? 'bg-blue-500' :
+                    session.status === 'finished' ? 'bg-green-500' :
+                    session.status === 'blocked' ? 'bg-yellow-500' :
+                    session.status === 'expired' ? 'bg-red-500' : 'bg-gray-500'
                   }\`}>
                     {session.status}
                   </span>

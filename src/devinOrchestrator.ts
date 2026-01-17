@@ -1,35 +1,77 @@
+import { Octokit } from '@octokit/rest';
 import {
   AlertBatch,
   DevinSession,
   DevinStructuredOutput,
   SessionStatus,
   RemediationRun,
+  ConfidenceSignals,
 } from './types';
+import { PRGenerator } from './prGenerator';
 
 const DEVIN_API_BASE = 'https://api.devin.ai/v1';
+
+// Polling configuration with exponential backoff
+const INITIAL_POLL_INTERVAL_MS = 10000;  // 10 seconds
+const MAX_POLL_INTERVAL_MS = 60000;      // 1 minute max
+const BACKOFF_MULTIPLIER = 1.5;
+const MAX_POLL_RETRIES = 5;              // Max consecutive failures before giving up
+const MAX_TOTAL_POLL_TIME_MS = 3600000;  // 1 hour max total polling time
+
+// Devin API response interfaces
+interface DevinCreateSessionResponse {
+  session_id: string;
+  url: string;
+  is_new_session?: boolean;
+}
+
+interface DevinSessionResponse {
+  session_id: string;
+  status: string;
+  status_enum: SessionStatus;
+  created_at: string;
+  updated_at: string;
+  messages?: Array<{ role: string; content: string; timestamp?: string }>;
+  structured_output?: DevinStructuredOutput;
+  pull_request?: { url: string };
+  title?: string;
+}
 
 export class DevinOrchestrator {
   private apiKey: string;
   private maxParallelSessions: number;
   private activeSessions: Map<string, DevinSession> = new Map();
   private repository: string;
+  private octokit: Octokit;
+  private prGenerator: PRGenerator;
+  private pollRetries: Map<string, number> = new Map();
+  private pollIntervals: Map<string, number> = new Map();
 
-  constructor(apiKey: string, maxParallelSessions: number, repository: string) {
+  constructor(apiKey: string, maxParallelSessions: number, repository: string, githubToken: string) {
     this.apiKey = apiKey;
     this.maxParallelSessions = maxParallelSessions;
     this.repository = repository;
+    this.octokit = new Octokit({ auth: githubToken });
+    this.prGenerator = new PRGenerator(repository);
   }
 
   async processBatches(
     batches: AlertBatch[],
     onProgress: (batch: AlertBatch, session: DevinSession) => void | Promise<void>,
-    onComplete: (batch: AlertBatch, session: DevinSession) => void | Promise<void>,
+    onComplete: (batch: AlertBatch, session: DevinSession, confidenceSignals?: ConfidenceSignals) => void | Promise<void>,
     checkPaused: () => boolean | Promise<boolean>
   ): Promise<Map<string, DevinSession>> {
     const pendingBatches = [...batches].filter(b => b.status === 'pending');
     const completedSessions = new Map<string, DevinSession>();
+    const startTime = Date.now();
 
     while (pendingBatches.length > 0 || this.activeSessions.size > 0) {
+      // Check for max total polling time
+      if (Date.now() - startTime > MAX_TOTAL_POLL_TIME_MS) {
+        console.error('Max total polling time exceeded, stopping orchestrator');
+        break;
+      }
+
       if (await checkPaused()) {
         console.log('Orchestrator paused, waiting...');
         await this.sleep(5000);
@@ -45,6 +87,8 @@ export class DevinOrchestrator {
         
         if (session) {
           this.activeSessions.set(batch.id, session);
+          this.pollRetries.set(batch.id, 0);
+          this.pollIntervals.set(batch.id, INITIAL_POLL_INTERVAL_MS);
           batch.status = 'in_progress';
           batch.sessionId = session.sessionId;
           batch.sessionUrl = session.url;
@@ -54,18 +98,26 @@ export class DevinOrchestrator {
 
       for (const [batchId, session] of this.activeSessions.entries()) {
         const batch = batches.find(b => b.id === batchId)!;
-        const updatedSession = await this.pollSession(session.sessionId);
+        const updatedSession = await this.pollSessionWithBackoff(session.sessionId, batchId);
         
         if (updatedSession) {
+          // Reset retry count on successful poll
+          this.pollRetries.set(batchId, 0);
           this.activeSessions.set(batchId, updatedSession);
           await onProgress(batch, updatedSession);
 
           if (this.isSessionComplete(updatedSession.status)) {
-            batch.status = updatedSession.status === 'stopped' ? 'completed' : 'failed';
+            batch.status = updatedSession.status === 'finished' ? 'completed' : 'failed';
             batch.completedAt = new Date().toISOString();
             
-            if (updatedSession.structuredOutput?.prUrl) {
+            // Get PR URL from API response (pull_request.url) or structured output
+            if (updatedSession.prUrl) {
+              batch.prUrl = updatedSession.prUrl;
+              // Update PR description with rich format
+              await this.updatePRDescription(batch, updatedSession);
+            } else if (updatedSession.structuredOutput?.prUrl) {
               batch.prUrl = updatedSession.structuredOutput.prUrl;
+              await this.updatePRDescription(batch, updatedSession);
             }
             
             if (updatedSession.structuredOutput?.confidenceScore) {
@@ -74,15 +126,87 @@ export class DevinOrchestrator {
 
             completedSessions.set(batchId, updatedSession);
             this.activeSessions.delete(batchId);
+            this.pollRetries.delete(batchId);
+            this.pollIntervals.delete(batchId);
             await onComplete(batch, updatedSession);
+          }
+        } else {
+          // Handle poll failure with retry logic
+          const retries = (this.pollRetries.get(batchId) || 0) + 1;
+          this.pollRetries.set(batchId, retries);
+          
+          if (retries >= MAX_POLL_RETRIES) {
+            console.error(`Max retries exceeded for batch ${batchId}, marking as failed`);
+            batch.status = 'failed';
+            batch.completedAt = new Date().toISOString();
+            this.activeSessions.delete(batchId);
+            this.pollRetries.delete(batchId);
+            this.pollIntervals.delete(batchId);
+            await onComplete(batch, session);
+          } else {
+            // Increase poll interval with exponential backoff
+            const currentInterval = this.pollIntervals.get(batchId) || INITIAL_POLL_INTERVAL_MS;
+            const newInterval = Math.min(currentInterval * BACKOFF_MULTIPLIER, MAX_POLL_INTERVAL_MS);
+            this.pollIntervals.set(batchId, newInterval);
+            console.log(`Poll failed for batch ${batchId}, retry ${retries}/${MAX_POLL_RETRIES}, next interval: ${newInterval}ms`);
           }
         }
       }
 
-      await this.sleep(10000);
+      // Use the minimum poll interval among active sessions
+      const minInterval = Math.min(
+        ...Array.from(this.pollIntervals.values()),
+        INITIAL_POLL_INTERVAL_MS
+      );
+      await this.sleep(minInterval);
     }
 
     return completedSessions;
+  }
+
+  private async updatePRDescription(batch: AlertBatch, session: DevinSession): Promise<void> {
+    const prUrl = session.prUrl || session.structuredOutput?.prUrl;
+    if (!prUrl) return;
+
+    const prNumber = this.extractPRNumber(prUrl);
+    if (!prNumber) return;
+
+    try {
+      const [owner, repo] = this.repository.split('/');
+      const prDescription = this.prGenerator.generatePRDescription(
+        batch,
+        session.structuredOutput,
+        undefined, // confidenceSignals will be calculated by the caller
+        session.url
+      );
+
+      await this.octokit.pulls.update({
+        owner,
+        repo,
+        pull_number: prNumber,
+        title: prDescription.title,
+        body: prDescription.body,
+      });
+
+      // Add labels to the PR
+      if (prDescription.labels.length > 0) {
+        await this.octokit.issues.addLabels({
+          owner,
+          repo,
+          issue_number: prNumber,
+          labels: prDescription.labels,
+        });
+      }
+
+      console.log(`Updated PR #${prNumber} with rich description`);
+    } catch (error) {
+      console.error(`Failed to update PR description:`, error);
+    }
+  }
+
+  private extractPRNumber(prUrl: string): number | null {
+    const match = prUrl.match(/\/pull\/(\d+)/);
+    return match ? parseInt(match[1], 10) : null;
   }
 
   async startSession(batch: AlertBatch): Promise<DevinSession | null> {
@@ -102,25 +226,104 @@ export class DevinOrchestrator {
         }),
       });
 
+      // Handle specific error cases
       if (!response.ok) {
-        const error = await response.text();
-        console.error(`Failed to create session for batch ${batch.id}:`, error);
+        const errorText = await response.text();
+        
+        if (response.status === 401) {
+          console.error(`Authentication failed for Devin API. Please check your DEVIN_API_KEY.`);
+          throw new Error('Devin API authentication failed');
+        }
+        
+        if (response.status === 429) {
+          console.error(`Rate limit exceeded for Devin API. Waiting before retry...`);
+          // Wait 60 seconds before allowing retry
+          await this.sleep(60000);
+          return null;
+        }
+        
+        if (response.status === 403) {
+          console.error(`Access forbidden. Check API key permissions.`);
+          throw new Error('Devin API access forbidden');
+        }
+        
+        console.error(`Failed to create session for batch ${batch.id}: ${response.status} - ${errorText}`);
         return null;
       }
 
-      const data = await response.json() as { session_id: string; url: string };
+      const data = await response.json() as DevinCreateSessionResponse;
       
       return {
         sessionId: data.session_id,
         url: data.url,
-        status: 'running' as SessionStatus,
+        status: 'working' as SessionStatus,
         batchId: batch.id,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         messages: [],
       };
     } catch (error) {
+      if (error instanceof Error && (error.message.includes('authentication') || error.message.includes('forbidden'))) {
+        throw error; // Re-throw auth errors to stop the orchestrator
+      }
       console.error(`Error creating session for batch ${batch.id}:`, error);
+      return null;
+    }
+  }
+
+  private async pollSessionWithBackoff(sessionId: string, batchId: string): Promise<DevinSession | null> {
+    const currentInterval = this.pollIntervals.get(batchId) || INITIAL_POLL_INTERVAL_MS;
+    
+    try {
+      const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}`, {
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+        },
+      });
+
+      // Handle rate limiting with exponential backoff
+      if (response.status === 429) {
+        console.warn(`Rate limited when polling session ${sessionId}, backing off...`);
+        const newInterval = Math.min(currentInterval * BACKOFF_MULTIPLIER * 2, MAX_POLL_INTERVAL_MS);
+        this.pollIntervals.set(batchId, newInterval);
+        return null;
+      }
+
+      if (response.status === 401) {
+        console.error(`Authentication failed when polling session ${sessionId}`);
+        throw new Error('Devin API authentication failed');
+      }
+
+      if (!response.ok) {
+        console.error(`Failed to poll session ${sessionId}: ${response.status}`);
+        return null;
+      }
+
+      const data = await response.json() as DevinSessionResponse;
+      
+      // Reset interval on successful poll
+      this.pollIntervals.set(batchId, INITIAL_POLL_INTERVAL_MS);
+      
+      return {
+        sessionId: data.session_id,
+        url: `https://app.devin.ai/sessions/${sessionId}`,
+        status: data.status_enum || this.mapStatus(data.status),
+        batchId: batchId,
+        structuredOutput: data.structured_output,
+        prUrl: data.pull_request?.url,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+        messages: (data.messages || []).map(m => ({
+          role: m.role as 'user' | 'devin',
+          content: m.content,
+          timestamp: m.timestamp || new Date().toISOString(),
+        })),
+      };
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('authentication')) {
+        throw error;
+      }
+      console.error(`Error polling session ${sessionId}:`, error);
       return null;
     }
   }
@@ -233,9 +436,23 @@ export class DevinOrchestrator {
   "progress": <0-100>,
   "prUrl": "<string or null>",
   "confidenceScore": <0.0-1.0>,
-  "confidenceExplanation": "<string>"
+  "confidenceExplanation": "<string>",
+  "checklist": {
+    "repositoryCloned": <boolean>,
+    "branchCreated": <boolean>,
+    "alertsAnalyzed": <number>,
+    "alertsFixed": <number>,
+    "testsRun": <boolean>,
+    "testsPassed": <boolean>,
+    "prCreated": <boolean>
+  }
 }
 `;
+
+    // Generate alert checklist items
+    const alertChecklist = batch.alerts.map((alert, index) => 
+      `- [ ] Alert ${index + 1} (#${alert.number}): ${alert.rule.name} - analyzed and fixed`
+    ).join('\n');
 
     return `
 # CodeQL Security Vulnerability Remediation
@@ -251,26 +468,61 @@ You are tasked with fixing ${batch.alerts.length} CodeQL security vulnerabilitie
 ## Alerts to Fix
 ${alertDescriptions}
 
-## Instructions
+---
 
-1. **Clone the repository** and create a new branch named \`fix/codeql-${batch.groupKey}-${Date.now()}\`
+## Step-by-Step Instructions
 
-2. **For each alert**, analyze the vulnerability and implement a secure fix:
-   - Understand the root cause of the vulnerability
-   - Implement a fix that addresses the security issue without breaking functionality
-   - Ensure the fix follows security best practices
-   - Add comments explaining the security fix if helpful
+### Step 1: Repository Setup
+**Success Criteria**: Repository cloned and new branch created
 
-3. **Test your changes**:
-   - Run any existing tests to ensure you haven't broken functionality
-   - If possible, verify the CodeQL alert would be resolved
+1.1. Clone the repository: \`${this.repository}\`
+1.2. Create a new branch named: \`fix/codeql-${batch.groupKey}-${Date.now()}\`
+1.3. Update structured output with \`checklist.repositoryCloned: true\` and \`checklist.branchCreated: true\`
 
-4. **Create a Pull Request** with:
-   - A clear title mentioning the CWE/vulnerability type
-   - A detailed description of each fix
-   - References to the original CodeQL alerts
+### Step 2: Analyze Vulnerabilities
+**Success Criteria**: All ${batch.alerts.length} alerts understood with fix strategy identified
 
-5. **Update structured output** after each significant step using this schema:
+For each alert:
+2.1. Read the affected file and understand the code context
+2.2. Identify the root cause of the vulnerability
+2.3. Plan the fix approach following security best practices
+2.4. Update structured output: increment \`checklist.alertsAnalyzed\`
+
+### Step 3: Implement Fixes
+**Success Criteria**: All alerts fixed with secure code patterns
+
+For each alert:
+3.1. Implement the security fix
+3.2. Ensure the fix doesn't break existing functionality
+3.3. Add inline comments if the fix is non-obvious
+3.4. Update structured output: 
+     - Set fix status to "completed"
+     - Include originalCode and fixedCode
+     - Increment \`checklist.alertsFixed\`
+     - Update \`progress\` percentage
+
+### Step 4: Run Tests
+**Success Criteria**: All existing tests pass
+
+4.1. Run the project's test suite (npm test, pytest, etc.)
+4.2. If tests fail, investigate and fix without breaking security fixes
+4.3. Update structured output: \`checklist.testsRun: true\`, \`checklist.testsPassed: true/false\`
+
+### Step 5: Create Pull Request
+**Success Criteria**: PR created with clear description
+
+5.1. Commit all changes with message: "fix(security): resolve ${batch.alerts.length} CodeQL alerts for ${batch.groupKey}"
+5.2. Push the branch to origin
+5.3. Create a Pull Request with:
+     - Title mentioning the vulnerability type and count
+     - Description listing each fixed alert
+     - References to CWE numbers
+5.4. Update structured output: \`prUrl\`, \`checklist.prCreated: true\`, \`progress: 100\`
+
+---
+
+## Structured Output Schema
+Update this after EVERY significant action:
 ${structuredOutputSchema}
 
 ## Confidence Scoring Guidelines
@@ -282,35 +534,48 @@ When assessing your confidence score (0.0-1.0), consider:
 - **0.3-0.5**: Significant uncertainty, may need human review
 - **0.0-0.3**: Low confidence, complex issue or unclear solution
 
-Please update the structured output immediately after:
-- Starting work on each alert
-- Completing each fix
-- Running tests
-- Creating the PR
+---
 
-Begin by cloning the repository and analyzing the first alert.
+## Checklist (update structured output after each step)
+
+- [ ] Repository cloned and branch created
+${alertChecklist}
+- [ ] Tests run and passing
+- [ ] PR created with description
+
+---
+
+Begin with Step 1: Clone the repository and create a new branch.
 `;
   }
 
   private mapStatus(status: string): SessionStatus {
+    // Map Devin API status values to our SessionStatus type
     switch (status?.toLowerCase()) {
-      case 'running':
-        return 'running';
+      case 'working':
+        return 'working';
       case 'blocked':
         return 'blocked';
-      case 'stopped':
-        return 'stopped';
-      case 'completed':
-        return 'completed';
-      case 'failed':
-        return 'failed';
+      case 'finished':
+        return 'finished';
+      case 'expired':
+        return 'expired';
+      case 'suspend_requested':
+      case 'suspend_requested_frontend':
+      case 'suspended':
+        return 'suspended';
+      case 'resume_requested':
+      case 'resume_requested_frontend':
+      case 'resumed':
+        return 'resumed';
       default:
         return 'pending';
     }
   }
 
   private isSessionComplete(status: SessionStatus): boolean {
-    return ['stopped', 'completed', 'failed'].includes(status);
+    // Session is complete when finished, expired, or suspended
+    return ['finished', 'expired', 'suspended'].includes(status);
   }
 
   private sleep(ms: number): Promise<void> {
