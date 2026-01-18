@@ -34,6 +34,11 @@ on:
         required: false
         default: false
         type: boolean
+      repository:
+        description: 'Target repository (owner/repo format)'
+        required: false
+        default: ''
+        type: string
 
 permissions:
   contents: write
@@ -57,6 +62,7 @@ jobs:
         with:
           devin_api_key: ${{ secrets.DEVIN_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.event.inputs.repository || github.repository }}
           batching_strategy: ${{ github.event.inputs.batching_strategy || 'severity-then-cwe' }}
           max_batch_size: 5
           max_parallel_sessions: ${{ github.event.inputs.max_parallel_sessions || '3' }}
