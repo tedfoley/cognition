@@ -40,6 +40,9 @@ inputs:
   repository:
     description: 'Repository to analyze (owner/repo format). Defaults to current repository.'
     required: false
+  dashboard_repository:
+    description: 'Repository to deploy dashboard to (owner/repo format). Defaults to current repository.'
+    required: false
   dashboard_branch:
     description: 'Branch to publish dashboard data to'
     required: false
