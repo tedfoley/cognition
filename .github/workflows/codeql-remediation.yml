@@ -61,7 +61,7 @@ jobs:
         id: remediate
         with:
           devin_api_key: ${{ secrets.DEVIN_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.TARGET_REPO_TOKEN }}
           repository: ${{ github.event.inputs.repository || github.repository }}
           batching_strategy: ${{ github.event.inputs.batching_strategy || 'severity-then-cwe' }}
           max_batch_size: 5
