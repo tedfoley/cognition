@@ -33,6 +33,11 @@ async function run(): Promise<void> {
 
     const repository = core.getInput('repository') || 
       `${github.context.repo.owner}/${github.context.repo.repo}`;
+    
+    // Dashboard repository defaults to the current repo (where the action is running)
+    // This allows the dashboard to be deployed to the orchestrator repo even when scanning external repos
+    const dashboardRepository = core.getInput('dashboard_repository') || 
+      `${github.context.repo.owner}/${github.context.repo.repo}`;
 
     const config: RemediationConfig = {
       batchingStrategy,
@@ -50,7 +55,7 @@ async function run(): Promise<void> {
     const alertFetcher = new AlertFetcher(githubToken, repository);
     const batchingEngine = new BatchingEngine(batchingStrategy, maxBatchSize);
     const learningStoreManager = new LearningStoreManager(githubToken, repository);
-    const dashboardPublisher = new DashboardPublisher(githubToken, repository, dashboardBranch);
+    const dashboardPublisher = new DashboardPublisher(githubToken, dashboardRepository, dashboardBranch);
 
     core.info('Fetching CodeQL alerts...');
     const alerts = await alertFetcher.fetchAlerts(severityFilter);

@@ -63,6 +63,8 @@ jobs:
           devin_api_key: ${{ secrets.DEVIN_API_KEY }}
           github_token: ${{ secrets.TARGET_REPO_TOKEN }}
           repository: ${{ github.event.inputs.repository || github.repository }}
+          # Dashboard is deployed to this repo (cognition) by default, not the target repo
+          # dashboard_repository: defaults to github.repository (cognition)
           batching_strategy: ${{ github.event.inputs.batching_strategy || 'severity-then-cwe' }}
           max_batch_size: 5
           max_parallel_sessions: ${{ github.event.inputs.max_parallel_sessions || '3' }}

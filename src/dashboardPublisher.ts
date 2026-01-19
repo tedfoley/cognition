@@ -17,9 +17,14 @@ export class DashboardPublisher {
   private repo: string;
   private branch: string;
 
-  constructor(token: string, repository: string, branch: string = 'gh-pages') {
+  /**
+   * @param token - GitHub token for API access
+   * @param dashboardRepository - Repository where the dashboard will be deployed (owner/repo format)
+   * @param branch - Branch for GitHub Pages (default: gh-pages)
+   */
+  constructor(token: string, dashboardRepository: string, branch: string = 'gh-pages') {
     this.octokit = new Octokit({ auth: token });
-    const [owner, repo] = repository.split('/');
+    const [owner, repo] = dashboardRepository.split('/');
     this.owner = owner;
     this.repo = repo;
     this.branch = branch;
