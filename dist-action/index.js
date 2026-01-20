@@ -793,9 +793,14 @@ const rest_1 = __nccwpck_require__(5772);
 const DASHBOARD_DATA_PATH = 'data/remediation-data.json';
 const CONTROL_STATE_PATH = 'data/control-state.json';
 class DashboardPublisher {
-    constructor(token, repository, branch = 'gh-pages') {
+    /**
+     * @param token - GitHub token for API access
+     * @param dashboardRepository - Repository where the dashboard will be deployed (owner/repo format)
+     * @param branch - Branch for GitHub Pages (default: gh-pages)
+     */
+    constructor(token, dashboardRepository, branch = 'gh-pages') {
         this.octokit = new rest_1.Octokit({ auth: token });
-        const [owner, repo] = repository.split('/');
+        const [owner, repo] = dashboardRepository.split('/');
         this.owner = owner;
         this.repo = repo;
         this.branch = branch;
@@ -1085,6 +1090,8 @@ class DashboardPublisher {
       return (
         <div className="container mx-auto px-4 py-8">
           <Header run={run} controlState={controlState} />
+          <ControlPanel run={run} controlState={controlState} />
+          <ProgressOverview run={run} />
           <SecurityPosture run={run} />
           <BatchProgress batches={run.batches} />
           <SessionList sessions={run.sessions} />
@@ -1124,6 +1131,130 @@ class DashboardPublisher {
             <StatCard label="Processed" value={run.alertsProcessed} />
             <StatCard label="Batches" value={run.batches.length} />
             <StatCard label="PRs Created" value={run.prsCreated.length} />
+          </div>
+        </div>
+      );
+    }
+
+    function ControlPanel({ run, controlState }) {
+      const [showControlInfo, setShowControlInfo] = useState(false);
+      
+      const handlePauseClick = () => {
+        setShowControlInfo(true);
+      };
+
+      const handleResumeClick = () => {
+        setShowControlInfo(true);
+      };
+
+      if (run.status === 'completed' || run.status === 'failed') {
+        return null;
+      }
+
+      return (
+        <div className="mb-6 bg-gray-800 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Controls</h2>
+            <div className="flex gap-3">
+              {!controlState?.paused ? (
+                <button
+                  onClick={handlePauseClick}
+                  className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg font-medium transition-colors"
+                >
+                  Pause
+                </button>
+              ) : (
+                <button
+                  onClick={handleResumeClick}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium transition-colors"
+                >
+                  Resume
+                </button>
+              )}
+            </div>
+          </div>
+          {showControlInfo && (
+            <div className="mt-3 p-3 bg-gray-700 rounded-lg text-sm">
+              <p className="text-yellow-400 font-medium mb-2">Manual Control Required</p>
+              <p className="text-gray-300">
+                To pause/resume the remediation run, please contact your repository admin or 
+                trigger a workflow dispatch event with the appropriate control action.
+              </p>
+              <p className="text-gray-400 mt-2">
+                Alternatively, you can manually update the control state file at: 
+                <code className="ml-1 bg-gray-600 px-1 rounded">data/control-state.json</code>
+              </p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function ProgressOverview({ run }) {
+      // Calculate estimated time to completion
+      const completedBatches = run.batches.filter(b => b.status === 'completed' || b.status === 'failed').length;
+      const inProgressBatches = run.batches.filter(b => b.status === 'in_progress').length;
+      const pendingBatches = run.batches.filter(b => b.status === 'pending').length;
+      const totalBatches = run.batches.length;
+      
+      // Estimate based on average time per batch (assume ~15 min per batch if no data)
+      const AVG_MINUTES_PER_BATCH = 15;
+      const estimatedMinutesRemaining = (pendingBatches + inProgressBatches * 0.5) * AVG_MINUTES_PER_BATCH;
+      
+      // Calculate actual average if we have completed batches with timing data
+      let actualAvgMinutes = AVG_MINUTES_PER_BATCH;
+      const completedWithTiming = run.batches.filter(b => b.startedAt && b.completedAt);
+      if (completedWithTiming.length > 0) {
+        const totalMinutes = completedWithTiming.reduce((sum, b) => {
+          const start = new Date(b.startedAt).getTime();
+          const end = new Date(b.completedAt).getTime();
+          return sum + (end - start) / 60000;
+        }, 0);
+        actualAvgMinutes = totalMinutes / completedWithTiming.length;
+      }
+      
+      const refinedEstimate = (pendingBatches + inProgressBatches * 0.5) * actualAvgMinutes;
+      const progressPercent = totalBatches > 0 ? (completedBatches / totalBatches) * 100 : 0;
+
+      const formatTime = (minutes) => {
+        if (minutes < 1) return 'Less than a minute';
+        if (minutes < 60) return \`~\${Math.round(minutes)} min\`;
+        const hours = Math.floor(minutes / 60);
+        const mins = Math.round(minutes % 60);
+        return \`~\${hours}h \${mins}m\`;
+      };
+
+      return (
+        <div className="mb-6 bg-gray-800 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">Progress Overview</h2>
+            <span className="text-2xl font-bold text-blue-400">{progressPercent.toFixed(0)}%</span>
+          </div>
+          
+          <div className="w-full bg-gray-700 rounded-full h-4 mb-4">
+            <div 
+              className="bg-blue-500 h-4 rounded-full transition-all duration-500"
+              style={{ width: \`\${progressPercent}%\` }}
+            ></div>
+          </div>
+          
+          <div className="grid grid-cols-4 gap-4 text-center text-sm">
+            <div>
+              <p className="text-gray-400">Completed</p>
+              <p className="text-xl font-bold text-green-400">{completedBatches}</p>
+            </div>
+            <div>
+              <p className="text-gray-400">In Progress</p>
+              <p className="text-xl font-bold text-blue-400">{inProgressBatches}</p>
+            </div>
+            <div>
+              <p className="text-gray-400">Pending</p>
+              <p className="text-xl font-bold text-gray-400">{pendingBatches}</p>
+            </div>
+            <div>
+              <p className="text-gray-400">Est. Time Left</p>
+              <p className="text-xl font-bold text-yellow-400">{formatTime(refinedEstimate)}</p>
+            </div>
           </div>
         </div>
       );
@@ -1264,8 +1395,10 @@ class DashboardPublisher {
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium">Session {session.sessionId.slice(0, 8)}...</span>
                   <span className={\`px-2 py-1 rounded text-xs \${
-                    session.status === 'running' ? 'bg-blue-500' :
-                    session.status === 'stopped' ? 'bg-green-500' : 'bg-gray-500'
+                    session.status === 'working' ? 'bg-blue-500' :
+                    session.status === 'finished' ? 'bg-green-500' :
+                    session.status === 'blocked' ? 'bg-yellow-500' :
+                    session.status === 'expired' ? 'bg-red-500' : 'bg-gray-500'
                   }\`}>
                     {session.status}
                   </span>
@@ -1331,24 +1464,44 @@ exports.DashboardPublisher = DashboardPublisher;
 /***/ }),
 
 /***/ 8673:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DevinOrchestrator = void 0;
+const rest_1 = __nccwpck_require__(5772);
+const prGenerator_1 = __nccwpck_require__(3242);
 const DEVIN_API_BASE = 'https://api.devin.ai/v1';
+// Polling configuration with exponential backoff
+const INITIAL_POLL_INTERVAL_MS = 10000; // 10 seconds
+const MAX_POLL_INTERVAL_MS = 60000; // 1 minute max
+const BACKOFF_MULTIPLIER = 1.5;
+const MAX_POLL_RETRIES = 5; // Max consecutive failures before giving up
+const MAX_TOTAL_POLL_TIME_MS = 3600000; // 1 hour max total polling time
+const MAX_BATCH_TIME_MS = 1800000; // 30 minutes max per batch
 class DevinOrchestrator {
-    constructor(apiKey, maxParallelSessions, repository) {
+    constructor(apiKey, maxParallelSessions, repository, githubToken) {
         this.activeSessions = new Map();
+        this.pollRetries = new Map();
+        this.pollIntervals = new Map();
+        this.batchStartTimes = new Map();
         this.apiKey = apiKey;
         this.maxParallelSessions = maxParallelSessions;
         this.repository = repository;
+        this.octokit = new rest_1.Octokit({ auth: githubToken });
+        this.prGenerator = new prGenerator_1.PRGenerator(repository);
     }
     async processBatches(batches, onProgress, onComplete, checkPaused) {
         const pendingBatches = [...batches].filter(b => b.status === 'pending');
         const completedSessions = new Map();
+        const startTime = Date.now();
         while (pendingBatches.length > 0 || this.activeSessions.size > 0) {
+            // Check for max total polling time
+            if (Date.now() - startTime > MAX_TOTAL_POLL_TIME_MS) {
+                console.error('Max total polling time exceeded, stopping orchestrator');
+                break;
+            }
             if (await checkPaused()) {
                 console.log('Orchestrator paused, waiting...');
                 await this.sleep(5000);
@@ -1360,6 +1513,9 @@ class DevinOrchestrator {
                 const session = await this.startSession(batch);
                 if (session) {
                     this.activeSessions.set(batch.id, session);
+                    this.pollRetries.set(batch.id, 0);
+                    this.pollIntervals.set(batch.id, INITIAL_POLL_INTERVAL_MS);
+                    this.batchStartTimes.set(batch.id, Date.now());
                     batch.status = 'in_progress';
                     batch.sessionId = session.sessionId;
                     batch.sessionUrl = session.url;
@@ -1368,28 +1524,122 @@ class DevinOrchestrator {
             }
             for (const [batchId, session] of this.activeSessions.entries()) {
                 const batch = batches.find(b => b.id === batchId);
-                const updatedSession = await this.pollSession(session.sessionId);
+                // Check for per-batch timeout
+                const batchStartTime = this.batchStartTimes.get(batchId) || Date.now();
+                if (Date.now() - batchStartTime > MAX_BATCH_TIME_MS) {
+                    console.error(`Batch ${batchId} exceeded max time (${MAX_BATCH_TIME_MS / 60000} minutes), marking as failed`);
+                    batch.status = 'failed';
+                    batch.completedAt = new Date().toISOString();
+                    this.activeSessions.delete(batchId);
+                    this.pollRetries.delete(batchId);
+                    this.pollIntervals.delete(batchId);
+                    this.batchStartTimes.delete(batchId);
+                    await onComplete(batch, session);
+                    continue;
+                }
+                const updatedSession = await this.pollSessionWithBackoff(session.sessionId, batchId);
                 if (updatedSession) {
+                    // Reset retry count on successful poll
+                    this.pollRetries.set(batchId, 0);
                     this.activeSessions.set(batchId, updatedSession);
                     await onProgress(batch, updatedSession);
-                    if (this.isSessionComplete(updatedSession.status)) {
-                        batch.status = updatedSession.status === 'stopped' ? 'completed' : 'failed';
+                    // Check for completion: either session status is complete OR progress=100 with prUrl
+                    const isStatusComplete = this.isSessionComplete(updatedSession.status);
+                    const isProgressComplete = updatedSession.structuredOutput?.progress === 100 &&
+                        (updatedSession.prUrl || updatedSession.structuredOutput?.prUrl);
+                    if (isStatusComplete || isProgressComplete) {
+                        if (isProgressComplete && !isStatusComplete) {
+                            console.log(`Batch ${batchId} completed via progress=100 with prUrl (status was: ${updatedSession.status})`);
+                        }
+                        // If completed via progress=100 with prUrl, mark as completed regardless of status
+                        batch.status = isProgressComplete ? 'completed' : (updatedSession.status === 'finished' ? 'completed' : 'failed');
                         batch.completedAt = new Date().toISOString();
-                        if (updatedSession.structuredOutput?.prUrl) {
+                        // Get PR URL from API response (pull_request.url) or structured output
+                        if (updatedSession.prUrl) {
+                            batch.prUrl = updatedSession.prUrl;
+                            // Update PR description with rich format
+                            await this.updatePRDescription(batch, updatedSession);
+                        }
+                        else if (updatedSession.structuredOutput?.prUrl) {
                             batch.prUrl = updatedSession.structuredOutput.prUrl;
+                            await this.updatePRDescription(batch, updatedSession);
                         }
                         if (updatedSession.structuredOutput?.confidenceScore) {
                             batch.confidenceScore = updatedSession.structuredOutput.confidenceScore;
                         }
                         completedSessions.set(batchId, updatedSession);
                         this.activeSessions.delete(batchId);
+                        this.pollRetries.delete(batchId);
+                        this.pollIntervals.delete(batchId);
+                        this.batchStartTimes.delete(batchId);
                         await onComplete(batch, updatedSession);
                     }
                 }
+                else {
+                    // Handle poll failure with retry logic
+                    const retries = (this.pollRetries.get(batchId) || 0) + 1;
+                    this.pollRetries.set(batchId, retries);
+                    if (retries >= MAX_POLL_RETRIES) {
+                        console.error(`Max retries exceeded for batch ${batchId}, marking as failed`);
+                        batch.status = 'failed';
+                        batch.completedAt = new Date().toISOString();
+                        this.activeSessions.delete(batchId);
+                        this.pollRetries.delete(batchId);
+                        this.pollIntervals.delete(batchId);
+                        this.batchStartTimes.delete(batchId);
+                        await onComplete(batch, session);
+                    }
+                    else {
+                        // Increase poll interval with exponential backoff
+                        const currentInterval = this.pollIntervals.get(batchId) || INITIAL_POLL_INTERVAL_MS;
+                        const newInterval = Math.min(currentInterval * BACKOFF_MULTIPLIER, MAX_POLL_INTERVAL_MS);
+                        this.pollIntervals.set(batchId, newInterval);
+                        console.log(`Poll failed for batch ${batchId}, retry ${retries}/${MAX_POLL_RETRIES}, next interval: ${newInterval}ms`);
+                    }
+                }
             }
-            await this.sleep(10000);
+            // Use the minimum poll interval among active sessions
+            const minInterval = Math.min(...Array.from(this.pollIntervals.values()), INITIAL_POLL_INTERVAL_MS);
+            await this.sleep(minInterval);
         }
         return completedSessions;
+    }
+    async updatePRDescription(batch, session) {
+        const prUrl = session.prUrl || session.structuredOutput?.prUrl;
+        if (!prUrl)
+            return;
+        const prNumber = this.extractPRNumber(prUrl);
+        if (!prNumber)
+            return;
+        try {
+            const [owner, repo] = this.repository.split('/');
+            const prDescription = this.prGenerator.generatePRDescription(batch, session.structuredOutput, undefined, // confidenceSignals will be calculated by the caller
+            session.url);
+            await this.octokit.pulls.update({
+                owner,
+                repo,
+                pull_number: prNumber,
+                title: prDescription.title,
+                body: prDescription.body,
+            });
+            // Add labels to the PR
+            if (prDescription.labels.length > 0) {
+                await this.octokit.issues.addLabels({
+                    owner,
+                    repo,
+                    issue_number: prNumber,
+                    labels: prDescription.labels,
+                });
+            }
+            console.log(`Updated PR #${prNumber} with rich description`);
+        }
+        catch (error) {
+            console.error(`Failed to update PR description:`, error);
+        }
+    }
+    extractPRNumber(prUrl) {
+        const match = prUrl.match(/\/pull\/(\d+)/);
+        return match ? parseInt(match[1], 10) : null;
     }
     async startSession(batch) {
         const prompt = this.buildPrompt(batch);
@@ -1406,16 +1656,31 @@ class DevinOrchestrator {
                     tags: ['codeql-remediation', batch.severity, batch.groupKey],
                 }),
             });
+            // Handle specific error cases
             if (!response.ok) {
-                const error = await response.text();
-                console.error(`Failed to create session for batch ${batch.id}:`, error);
+                const errorText = await response.text();
+                if (response.status === 401) {
+                    console.error(`Authentication failed for Devin API. Please check your DEVIN_API_KEY.`);
+                    throw new Error('Devin API authentication failed');
+                }
+                if (response.status === 429) {
+                    console.error(`Rate limit exceeded for Devin API. Waiting before retry...`);
+                    // Wait 60 seconds before allowing retry
+                    await this.sleep(60000);
+                    return null;
+                }
+                if (response.status === 403) {
+                    console.error(`Access forbidden. Check API key permissions.`);
+                    throw new Error('Devin API access forbidden');
+                }
+                console.error(`Failed to create session for batch ${batch.id}: ${response.status} - ${errorText}`);
                 return null;
             }
             const data = await response.json();
             return {
                 sessionId: data.session_id,
                 url: data.url,
-                status: 'running',
+                status: 'working',
                 batchId: batch.id,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
@@ -1423,7 +1688,62 @@ class DevinOrchestrator {
             };
         }
         catch (error) {
+            if (error instanceof Error && (error.message.includes('authentication') || error.message.includes('forbidden'))) {
+                throw error; // Re-throw auth errors to stop the orchestrator
+            }
             console.error(`Error creating session for batch ${batch.id}:`, error);
+            return null;
+        }
+    }
+    async pollSessionWithBackoff(sessionId, batchId) {
+        const currentInterval = this.pollIntervals.get(batchId) || INITIAL_POLL_INTERVAL_MS;
+        try {
+            const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}`, {
+                headers: {
+                    'Authorization': `Bearer ${this.apiKey}`,
+                },
+            });
+            // Handle rate limiting with exponential backoff
+            if (response.status === 429) {
+                console.warn(`Rate limited when polling session ${sessionId}, backing off...`);
+                const newInterval = Math.min(currentInterval * BACKOFF_MULTIPLIER * 2, MAX_POLL_INTERVAL_MS);
+                this.pollIntervals.set(batchId, newInterval);
+                return null;
+            }
+            if (response.status === 401) {
+                console.error(`Authentication failed when polling session ${sessionId}`);
+                throw new Error('Devin API authentication failed');
+            }
+            if (!response.ok) {
+                console.error(`Failed to poll session ${sessionId}: ${response.status}`);
+                return null;
+            }
+            const data = await response.json();
+            // Log actual status values for debugging
+            console.log(`Session ${sessionId} status: ${data.status}, status_enum: ${data.status_enum}, progress: ${data.structured_output?.progress || 0}%`);
+            // Reset interval on successful poll
+            this.pollIntervals.set(batchId, INITIAL_POLL_INTERVAL_MS);
+            return {
+                sessionId: data.session_id,
+                url: `https://app.devin.ai/sessions/${sessionId}`,
+                status: data.status_enum || this.mapStatus(data.status),
+                batchId: batchId,
+                structuredOutput: data.structured_output,
+                prUrl: data.pull_request?.url,
+                createdAt: data.created_at,
+                updatedAt: data.updated_at,
+                messages: (data.messages || []).map(m => ({
+                    role: m.role,
+                    content: m.content,
+                    timestamp: m.timestamp || new Date().toISOString(),
+                })),
+            };
+        }
+        catch (error) {
+            if (error instanceof Error && error.message.includes('authentication')) {
+                throw error;
+            }
+            console.error(`Error polling session ${sessionId}:`, error);
             return null;
         }
     }
@@ -1519,9 +1839,20 @@ class DevinOrchestrator {
   "progress": <0-100>,
   "prUrl": "<string or null>",
   "confidenceScore": <0.0-1.0>,
-  "confidenceExplanation": "<string>"
+  "confidenceExplanation": "<string>",
+  "checklist": {
+    "repositoryCloned": <boolean>,
+    "branchCreated": <boolean>,
+    "alertsAnalyzed": <number>,
+    "alertsFixed": <number>,
+    "testsRun": <boolean>,
+    "testsPassed": <boolean>,
+    "prCreated": <boolean>
+  }
 }
 `;
+        // Generate alert checklist items
+        const alertChecklist = batch.alerts.map((alert, index) => `- [ ] Alert ${index + 1} (#${alert.number}): ${alert.rule.name} - analyzed and fixed`).join('\n');
         return `
 # CodeQL Security Vulnerability Remediation
 
@@ -1536,26 +1867,61 @@ You are tasked with fixing ${batch.alerts.length} CodeQL security vulnerabilitie
 ## Alerts to Fix
 ${alertDescriptions}
 
-## Instructions
+---
 
-1. **Clone the repository** and create a new branch named \`fix/codeql-${batch.groupKey}-${Date.now()}\`
+## Step-by-Step Instructions
 
-2. **For each alert**, analyze the vulnerability and implement a secure fix:
-   - Understand the root cause of the vulnerability
-   - Implement a fix that addresses the security issue without breaking functionality
-   - Ensure the fix follows security best practices
-   - Add comments explaining the security fix if helpful
+### Step 1: Repository Setup
+**Success Criteria**: Repository cloned and new branch created
 
-3. **Test your changes**:
-   - Run any existing tests to ensure you haven't broken functionality
-   - If possible, verify the CodeQL alert would be resolved
+1.1. Clone the repository: \`${this.repository}\`
+1.2. Create a new branch named: \`fix/codeql-${batch.groupKey}-${Date.now()}\`
+1.3. Update structured output with \`checklist.repositoryCloned: true\` and \`checklist.branchCreated: true\`
 
-4. **Create a Pull Request** with:
-   - A clear title mentioning the CWE/vulnerability type
-   - A detailed description of each fix
-   - References to the original CodeQL alerts
+### Step 2: Analyze Vulnerabilities
+**Success Criteria**: All ${batch.alerts.length} alerts understood with fix strategy identified
 
-5. **Update structured output** after each significant step using this schema:
+For each alert:
+2.1. Read the affected file and understand the code context
+2.2. Identify the root cause of the vulnerability
+2.3. Plan the fix approach following security best practices
+2.4. Update structured output: increment \`checklist.alertsAnalyzed\`
+
+### Step 3: Implement Fixes
+**Success Criteria**: All alerts fixed with secure code patterns
+
+For each alert:
+3.1. Implement the security fix
+3.2. Ensure the fix doesn't break existing functionality
+3.3. Add inline comments if the fix is non-obvious
+3.4. Update structured output: 
+     - Set fix status to "completed"
+     - Include originalCode and fixedCode
+     - Increment \`checklist.alertsFixed\`
+     - Update \`progress\` percentage
+
+### Step 4: Run Tests
+**Success Criteria**: All existing tests pass
+
+4.1. Run the project's test suite (npm test, pytest, etc.)
+4.2. If tests fail, investigate and fix without breaking security fixes
+4.3. Update structured output: \`checklist.testsRun: true\`, \`checklist.testsPassed: true/false\`
+
+### Step 5: Create Pull Request
+**Success Criteria**: PR created with clear description
+
+5.1. Commit all changes with message: "fix(security): resolve ${batch.alerts.length} CodeQL alerts for ${batch.groupKey}"
+5.2. Push the branch to origin
+5.3. Create a Pull Request with:
+     - Title mentioning the vulnerability type and count
+     - Description listing each fixed alert
+     - References to CWE numbers
+5.4. Update structured output: \`prUrl\`, \`checklist.prCreated: true\`, \`progress: 100\`
+
+---
+
+## Structured Output Schema
+Update this after EVERY significant action:
 ${structuredOutputSchema}
 
 ## Confidence Scoring Guidelines
@@ -1567,33 +1933,46 @@ When assessing your confidence score (0.0-1.0), consider:
 - **0.3-0.5**: Significant uncertainty, may need human review
 - **0.0-0.3**: Low confidence, complex issue or unclear solution
 
-Please update the structured output immediately after:
-- Starting work on each alert
-- Completing each fix
-- Running tests
-- Creating the PR
+---
 
-Begin by cloning the repository and analyzing the first alert.
+## Checklist (update structured output after each step)
+
+- [ ] Repository cloned and branch created
+${alertChecklist}
+- [ ] Tests run and passing
+- [ ] PR created with description
+
+---
+
+Begin with Step 1: Clone the repository and create a new branch.
 `;
     }
     mapStatus(status) {
+        // Map Devin API status values to our SessionStatus type
         switch (status?.toLowerCase()) {
-            case 'running':
-                return 'running';
+            case 'working':
+                return 'working';
             case 'blocked':
                 return 'blocked';
-            case 'stopped':
-                return 'stopped';
-            case 'completed':
-                return 'completed';
-            case 'failed':
-                return 'failed';
+            case 'finished':
+                return 'finished';
+            case 'expired':
+                return 'expired';
+            case 'suspend_requested':
+            case 'suspend_requested_frontend':
+            case 'suspended':
+                return 'suspended';
+            case 'resume_requested':
+            case 'resume_requested_frontend':
+            case 'resumed':
+                return 'resumed';
             default:
                 return 'pending';
         }
     }
     isSessionComplete(status) {
-        return ['stopped', 'completed', 'failed'].includes(status);
+        // Session is complete when finished, expired, or suspended
+        return ['finished', 'expired', 'suspended'].includes(status);
     }
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -1656,7 +2035,6 @@ const batchingEngine_1 = __nccwpck_require__(5327);
 const devinOrchestrator_1 = __nccwpck_require__(8673);
 const confidenceScorer_1 = __nccwpck_require__(2337);
 const learningStore_1 = __nccwpck_require__(1462);
-const prGenerator_1 = __nccwpck_require__(3242);
 const dashboardPublisher_1 = __nccwpck_require__(189);
 async function run() {
     try {
@@ -1674,6 +2052,10 @@ async function run() {
         const dryRun = core.getInput('dry_run') === 'true';
         const repository = core.getInput('repository') ||
             `${github.context.repo.owner}/${github.context.repo.repo}`;
+        // Dashboard repository defaults to the current repo (where the action is running)
+        // This allows the dashboard to be deployed to the orchestrator repo even when scanning external repos
+        const dashboardRepository = core.getInput('dashboard_repository') ||
+            `${github.context.repo.owner}/${github.context.repo.repo}`;
         const config = {
             batchingStrategy,
             maxBatchSize,
@@ -1688,8 +2070,7 @@ async function run() {
         const alertFetcher = new alertFetcher_1.AlertFetcher(githubToken, repository);
         const batchingEngine = new batchingEngine_1.BatchingEngine(batchingStrategy, maxBatchSize);
         const learningStoreManager = new learningStore_1.LearningStoreManager(githubToken, repository);
-        const dashboardPublisher = new dashboardPublisher_1.DashboardPublisher(githubToken, repository, dashboardBranch);
-        const prGenerator = new prGenerator_1.PRGenerator(repository);
+        const dashboardPublisher = new dashboardPublisher_1.DashboardPublisher(githubToken, dashboardRepository, dashboardBranch);
         core.info('Fetching CodeQL alerts...');
         const alerts = await alertFetcher.fetchAlerts(severityFilter);
         core.info(`Found ${alerts.length} open alerts`);
@@ -1758,7 +2139,7 @@ async function run() {
             core.setOutput('pr_count', 0);
             return;
         }
-        const devinOrchestrator = new devinOrchestrator_1.DevinOrchestrator(devinApiKey, maxParallelSessions, repository);
+        const devinOrchestrator = new devinOrchestrator_1.DevinOrchestrator(devinApiKey, maxParallelSessions, repository, githubToken);
         const confidenceScorer = new confidenceScorer_1.ConfidenceScorer(githubToken, repository, learningStore);
         const checkPaused = async () => {
             const controlState = await dashboardPublisher.readControlState();
