@@ -1,0 +1,1318 @@
+{
+  "run": {
+    "id": "run-mklvjqmf-hjs5yt",
+    "repository": "tedfoley/vulnerable-demo-app",
+    "startedAt": "2026-01-20T00:47:15.591Z",
+    "status": "running",
+    "config": {
+      "batchingStrategy": "severity-then-cwe",
+      "maxBatchSize": 5,
+      "maxParallelSessions": 3,
+      "minConfidenceThreshold": 0.7,
+      "severityFilter": [
+        "critical",
+        "high",
+        "medium"
+      ],
+      "minAlertsThreshold": 3,
+      "dryRun": false
+    },
+    "alertsTotal": 27,
+    "alertsProcessed": 0,
+    "batches": [
+      {
+        "id": "e4d7cd95-fa0d-4d87-9cb7-c2eed542e1d0",
+        "alerts": [
+          {
+            "number": 16,
+            "rule": {
+              "id": "js/command-line-injection",
+              "name": "js/command-line-injection",
+              "severity": "critical",
+              "description": "Uncontrolled command line",
+              "tags": [
+                "correctness",
+                "external/cwe/cwe-078",
+                "external/cwe/cwe-088",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This command line depends on a user-provided value."
+              },
+              "location": {
+                "path": "src/routes/admin.js",
+                "start_line": 84,
+                "end_line": 84,
+                "start_column": 8,
+                "end_column": 27
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/16",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/16/instances",
+            "cwe": [
+              "CWE-078",
+              "CWE-088"
+            ]
+          },
+          {
+            "number": 15,
+            "rule": {
+              "id": "js/command-line-injection",
+              "name": "js/command-line-injection",
+              "severity": "critical",
+              "description": "Uncontrolled command line",
+              "tags": [
+                "correctness",
+                "external/cwe/cwe-078",
+                "external/cwe/cwe-088",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This command line depends on a user-provided value."
+              },
+              "location": {
+                "path": "src/routes/admin.js",
+                "start_line": 55,
+                "end_line": 55,
+                "start_column": 8,
+                "end_column": 15
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/15",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/15/instances",
+            "cwe": [
+              "CWE-078",
+              "CWE-088"
+            ]
+          },
+          {
+            "number": 14,
+            "rule": {
+              "id": "js/command-line-injection",
+              "name": "js/command-line-injection",
+              "severity": "critical",
+              "description": "Uncontrolled command line",
+              "tags": [
+                "correctness",
+                "external/cwe/cwe-078",
+                "external/cwe/cwe-088",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This command line depends on a user-provided value."
+              },
+              "location": {
+                "path": "src/routes/admin.js",
+                "start_line": 38,
+                "end_line": 38,
+                "start_column": 8,
+                "end_column": 51
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/14",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/14/instances",
+            "cwe": [
+              "CWE-078",
+              "CWE-088"
+            ]
+          },
+          {
+            "number": 13,
+            "rule": {
+              "id": "js/command-line-injection",
+              "name": "js/command-line-injection",
+              "severity": "critical",
+              "description": "Uncontrolled command line",
+              "tags": [
+                "correctness",
+                "external/cwe/cwe-078",
+                "external/cwe/cwe-088",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This command line depends on a user-provided value."
+              },
+              "location": {
+                "path": "src/routes/admin.js",
+                "start_line": 23,
+                "end_line": 23,
+                "start_column": 8,
+                "end_column": 27
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/13",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/13/instances",
+            "cwe": [
+              "CWE-078",
+              "CWE-088"
+            ]
+          }
+        ],
+        "strategy": "severity-then-cwe",
+        "groupKey": "critical-CWE-078",
+        "severity": "critical",
+        "priority": 108,
+        "status": "pending"
+      },
+      {
+        "id": "70ba00d6-96fe-48dd-b563-9837f9b81c63",
+        "alerts": [
+          {
+            "number": 26,
+            "rule": {
+              "id": "js/type-confusion-through-parameter-tampering",
+              "name": "js/type-confusion-through-parameter-tampering",
+              "severity": "critical",
+              "description": "Type confusion through parameter tampering",
+              "tags": [
+                "external/cwe/cwe-843",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "Potential type confusion as this HTTP request parameter may be either an array or a string."
+              },
+              "location": {
+                "path": "src/routes/files.js",
+                "start_line": 60,
+                "end_line": 60,
+                "start_column": 73,
+                "end_column": 81
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/26",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/26/instances",
+            "cwe": [
+              "CWE-843"
+            ]
+          },
+          {
+            "number": 25,
+            "rule": {
+              "id": "js/type-confusion-through-parameter-tampering",
+              "name": "js/type-confusion-through-parameter-tampering",
+              "severity": "critical",
+              "description": "Type confusion through parameter tampering",
+              "tags": [
+                "external/cwe/cwe-843",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "Potential type confusion as this HTTP request parameter may be either an array or a string."
+              },
+              "location": {
+                "path": "src/routes/files.js",
+                "start_line": 60,
+                "end_line": 60,
+                "start_column": 47,
+                "end_column": 55
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/25",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/25/instances",
+            "cwe": [
+              "CWE-843"
+            ]
+          },
+          {
+            "number": 24,
+            "rule": {
+              "id": "js/type-confusion-through-parameter-tampering",
+              "name": "js/type-confusion-through-parameter-tampering",
+              "severity": "critical",
+              "description": "Type confusion through parameter tampering",
+              "tags": [
+                "external/cwe/cwe-843",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "Potential type confusion as this HTTP request parameter may be either an array or a string."
+              },
+              "location": {
+                "path": "src/routes/files.js",
+                "start_line": 60,
+                "end_line": 60,
+                "start_column": 20,
+                "end_column": 28
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/24",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/24/instances",
+            "cwe": [
+              "CWE-843"
+            ]
+          }
+        ],
+        "strategy": "severity-then-cwe",
+        "groupKey": "critical-CWE-843",
+        "severity": "critical",
+        "priority": 106,
+        "status": "pending"
+      },
+      {
+        "id": "ae2f52a2-71b8-4b62-b8d3-ab9aa9f8316d",
+        "alerts": [
+          {
+            "number": 12,
+            "rule": {
+              "id": "js/missing-rate-limiting",
+              "name": "js/missing-rate-limiting",
+              "severity": "high",
+              "description": "Missing rate limiting",
+              "tags": [
+                "external/cwe/cwe-307",
+                "external/cwe/cwe-400",
+                "external/cwe/cwe-770",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This route handler performs a system command, but is not rate-limited."
+              },
+              "location": {
+                "path": "src/routes/admin.js",
+                "start_line": 73,
+                "end_line": 91,
+                "start_column": 26,
+                "end_column": 2
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/12",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/12/instances",
+            "cwe": [
+              "CWE-307",
+              "CWE-400",
+              "CWE-770"
+            ]
+          },
+          {
+            "number": 11,
+            "rule": {
+              "id": "js/missing-rate-limiting",
+              "name": "js/missing-rate-limiting",
+              "severity": "high",
+              "description": "Missing rate limiting",
+              "tags": [
+                "external/cwe/cwe-307",
+                "external/cwe/cwe-400",
+                "external/cwe/cwe-770",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This route handler performs a database access, but is not rate-limited."
+              },
+              "location": {
+                "path": "src/routes/users.js",
+                "start_line": 76,
+                "end_line": 88,
+                "start_column": 28,
+                "end_column": 2
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/11",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/11/instances",
+            "cwe": [
+              "CWE-307",
+              "CWE-400",
+              "CWE-770"
+            ]
+          },
+          {
+            "number": 10,
+            "rule": {
+              "id": "js/missing-rate-limiting",
+              "name": "js/missing-rate-limiting",
+              "severity": "high",
+              "description": "Missing rate limiting",
+              "tags": [
+                "external/cwe/cwe-307",
+                "external/cwe/cwe-400",
+                "external/cwe/cwe-770",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This route handler performs a system command, but is not rate-limited."
+              },
+              "location": {
+                "path": "src/routes/admin.js",
+                "start_line": 49,
+                "end_line": 62,
+                "start_column": 23,
+                "end_column": 2
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/10",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/10/instances",
+            "cwe": [
+              "CWE-307",
+              "CWE-400",
+              "CWE-770"
+            ]
+          },
+          {
+            "number": 9,
+            "rule": {
+              "id": "js/missing-rate-limiting",
+              "name": "js/missing-rate-limiting",
+              "severity": "high",
+              "description": "Missing rate limiting",
+              "tags": [
+                "external/cwe/cwe-307",
+                "external/cwe/cwe-400",
+                "external/cwe/cwe-770",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This route handler performs a database access, but is not rate-limited."
+              },
+              "location": {
+                "path": "src/routes/users.js",
+                "start_line": 57,
+                "end_line": 73,
+                "start_column": 23,
+                "end_column": 2
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/9",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/9/instances",
+            "cwe": [
+              "CWE-307",
+              "CWE-400",
+              "CWE-770"
+            ]
+          },
+          {
+            "number": 8,
+            "rule": {
+              "id": "js/missing-rate-limiting",
+              "name": "js/missing-rate-limiting",
+              "severity": "high",
+              "description": "Missing rate limiting",
+              "tags": [
+                "external/cwe/cwe-307",
+                "external/cwe/cwe-400",
+                "external/cwe/cwe-770",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This route handler performs a system command, but is not rate-limited."
+              },
+              "location": {
+                "path": "src/routes/admin.js",
+                "start_line": 34,
+                "end_line": 45,
+                "start_column": 38,
+                "end_column": 2
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/8",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/8/instances",
+            "cwe": [
+              "CWE-307",
+              "CWE-400",
+              "CWE-770"
+            ]
+          }
+        ],
+        "strategy": "severity-then-cwe",
+        "groupKey": "high-CWE-307-part1",
+        "severity": "high",
+        "priority": 90,
+        "status": "pending"
+      },
+      {
+        "id": "70061816-dc31-44f8-96c0-8d8e93098e5d",
+        "alerts": [
+          {
+            "number": 7,
+            "rule": {
+              "id": "js/missing-rate-limiting",
+              "name": "js/missing-rate-limiting",
+              "severity": "high",
+              "description": "Missing rate limiting",
+              "tags": [
+                "external/cwe/cwe-307",
+                "external/cwe/cwe-400",
+                "external/cwe/cwe-770",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This route handler performs a system command, but is not rate-limited."
+              },
+              "location": {
+                "path": "src/routes/admin.js",
+                "start_line": 19,
+                "end_line": 30,
+                "start_column": 21,
+                "end_column": 2
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/7",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/7/instances",
+            "cwe": [
+              "CWE-307",
+              "CWE-400",
+              "CWE-770"
+            ]
+          },
+          {
+            "number": 6,
+            "rule": {
+              "id": "js/missing-rate-limiting",
+              "name": "js/missing-rate-limiting",
+              "severity": "high",
+              "description": "Missing rate limiting",
+              "tags": [
+                "external/cwe/cwe-307",
+                "external/cwe/cwe-400",
+                "external/cwe/cwe-770",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This route handler performs a database access, but is not rate-limited."
+              },
+              "location": {
+                "path": "src/routes/users.js",
+                "start_line": 41,
+                "end_line": 53,
+                "start_column": 21,
+                "end_column": 2
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/6",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/6/instances",
+            "cwe": [
+              "CWE-307",
+              "CWE-400",
+              "CWE-770"
+            ]
+          },
+          {
+            "number": 5,
+            "rule": {
+              "id": "js/missing-rate-limiting",
+              "name": "js/missing-rate-limiting",
+              "severity": "high",
+              "description": "Missing rate limiting",
+              "tags": [
+                "external/cwe/cwe-307",
+                "external/cwe/cwe-400",
+                "external/cwe/cwe-770",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This route handler performs a file system access, but is not rate-limited."
+              },
+              "location": {
+                "path": "src/routes/files.js",
+                "start_line": 56,
+                "end_line": 77,
+                "start_column": 26,
+                "end_column": 2
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/5",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/5/instances",
+            "cwe": [
+              "CWE-307",
+              "CWE-400",
+              "CWE-770"
+            ]
+          },
+          {
+            "number": 4,
+            "rule": {
+              "id": "js/missing-rate-limiting",
+              "name": "js/missing-rate-limiting",
+              "severity": "high",
+              "description": "Missing rate limiting",
+              "tags": [
+                "external/cwe/cwe-307",
+                "external/cwe/cwe-400",
+                "external/cwe/cwe-770",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This route handler performs a file system access, but is not rate-limited."
+              },
+              "location": {
+                "path": "src/routes/files.js",
+                "start_line": 41,
+                "end_line": 53,
+                "start_column": 23,
+                "end_column": 2
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/4",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/4/instances",
+            "cwe": [
+              "CWE-307",
+              "CWE-400",
+              "CWE-770"
+            ]
+          },
+          {
+            "number": 3,
+            "rule": {
+              "id": "js/missing-rate-limiting",
+              "name": "js/missing-rate-limiting",
+              "severity": "high",
+              "description": "Missing rate limiting",
+              "tags": [
+                "external/cwe/cwe-307",
+                "external/cwe/cwe-400",
+                "external/cwe/cwe-770",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This route handler performs a database access, but is not rate-limited."
+              },
+              "location": {
+                "path": "src/routes/users.js",
+                "start_line": 25,
+                "end_line": 37,
+                "start_column": 23,
+                "end_column": 2
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/3",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/3/instances",
+            "cwe": [
+              "CWE-307",
+              "CWE-400",
+              "CWE-770"
+            ]
+          }
+        ],
+        "strategy": "severity-then-cwe",
+        "groupKey": "high-CWE-307-part2",
+        "severity": "high",
+        "priority": 90,
+        "status": "pending"
+      },
+      {
+        "id": "f474925e-1d87-4b8e-b590-a4cf2c329c6b",
+        "alerts": [
+          {
+            "number": 23,
+            "rule": {
+              "id": "js/path-injection",
+              "name": "js/path-injection",
+              "severity": "high",
+              "description": "Uncontrolled data used in path expression",
+              "tags": [
+                "external/cwe/cwe-022",
+                "external/cwe/cwe-023",
+                "external/cwe/cwe-036",
+                "external/cwe/cwe-073",
+                "external/cwe/cwe-099",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This path depends on a user-provided value."
+              },
+              "location": {
+                "path": "src/routes/files.js",
+                "start_line": 48,
+                "end_line": 48,
+                "start_column": 22,
+                "end_column": 30
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/23",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/23/instances",
+            "cwe": [
+              "CWE-022",
+              "CWE-023",
+              "CWE-036",
+              "CWE-073",
+              "CWE-099"
+            ]
+          },
+          {
+            "number": 22,
+            "rule": {
+              "id": "js/path-injection",
+              "name": "js/path-injection",
+              "severity": "high",
+              "description": "Uncontrolled data used in path expression",
+              "tags": [
+                "external/cwe/cwe-022",
+                "external/cwe/cwe-023",
+                "external/cwe/cwe-036",
+                "external/cwe/cwe-073",
+                "external/cwe/cwe-099",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This path depends on a user-provided value."
+              },
+              "location": {
+                "path": "src/routes/files.js",
+                "start_line": 31,
+                "end_line": 31,
+                "start_column": 37,
+                "end_column": 45
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/22",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/22/instances",
+            "cwe": [
+              "CWE-022",
+              "CWE-023",
+              "CWE-036",
+              "CWE-073",
+              "CWE-099"
+            ]
+          },
+          {
+            "number": 21,
+            "rule": {
+              "id": "js/path-injection",
+              "name": "js/path-injection",
+              "severity": "high",
+              "description": "Uncontrolled data used in path expression",
+              "tags": [
+                "external/cwe/cwe-022",
+                "external/cwe/cwe-023",
+                "external/cwe/cwe-036",
+                "external/cwe/cwe-073",
+                "external/cwe/cwe-099",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This path depends on a user-provided value."
+              },
+              "location": {
+                "path": "src/routes/files.js",
+                "start_line": 17,
+                "end_line": 17,
+                "start_column": 37,
+                "end_column": 45
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/21",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/21/instances",
+            "cwe": [
+              "CWE-022",
+              "CWE-023",
+              "CWE-036",
+              "CWE-073",
+              "CWE-099"
+            ]
+          }
+        ],
+        "strategy": "severity-then-cwe",
+        "groupKey": "high-CWE-022",
+        "severity": "high",
+        "priority": 86,
+        "status": "pending"
+      },
+      {
+        "id": "60322b22-e95f-471b-94b3-b6132877366b",
+        "alerts": [
+          {
+            "number": 20,
+            "rule": {
+              "id": "js/sql-injection",
+              "name": "js/sql-injection",
+              "severity": "high",
+              "description": "Database query built from user-controlled sources",
+              "tags": [
+                "external/cwe/cwe-089",
+                "external/cwe/cwe-090",
+                "external/cwe/cwe-943",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This query string depends on a user-provided value."
+              },
+              "location": {
+                "path": "src/routes/users.js",
+                "start_line": 64,
+                "end_line": 64,
+                "start_column": 29,
+                "end_column": 34
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/20",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/20/instances",
+            "cwe": [
+              "CWE-089",
+              "CWE-090",
+              "CWE-943"
+            ]
+          },
+          {
+            "number": 19,
+            "rule": {
+              "id": "js/sql-injection",
+              "name": "js/sql-injection",
+              "severity": "high",
+              "description": "Database query built from user-controlled sources",
+              "tags": [
+                "external/cwe/cwe-089",
+                "external/cwe/cwe-090",
+                "external/cwe/cwe-943",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This query string depends on a user-provided value."
+              },
+              "location": {
+                "path": "src/routes/users.js",
+                "start_line": 48,
+                "end_line": 48,
+                "start_column": 30,
+                "end_column": 35
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/19",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/19/instances",
+            "cwe": [
+              "CWE-089",
+              "CWE-090",
+              "CWE-943"
+            ]
+          },
+          {
+            "number": 18,
+            "rule": {
+              "id": "js/sql-injection",
+              "name": "js/sql-injection",
+              "severity": "high",
+              "description": "Database query built from user-controlled sources",
+              "tags": [
+                "external/cwe/cwe-089",
+                "external/cwe/cwe-090",
+                "external/cwe/cwe-943",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This query string depends on a user-provided value."
+              },
+              "location": {
+                "path": "src/routes/users.js",
+                "start_line": 32,
+                "end_line": 32,
+                "start_column": 30,
+                "end_column": 35
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/18",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/18/instances",
+            "cwe": [
+              "CWE-089",
+              "CWE-090",
+              "CWE-943"
+            ]
+          }
+        ],
+        "strategy": "severity-then-cwe",
+        "groupKey": "high-CWE-089",
+        "severity": "high",
+        "priority": 86,
+        "status": "pending"
+      },
+      {
+        "id": "c688f37c-98da-4c0e-9db0-1f3ec621740b",
+        "alerts": [
+          {
+            "number": 2,
+            "rule": {
+              "id": "js/missing-rate-limiting",
+              "name": "js/missing-rate-limiting",
+              "severity": "high",
+              "description": "Missing rate limiting",
+              "tags": [
+                "external/cwe/cwe-307",
+                "external/cwe/cwe-400",
+                "external/cwe/cwe-770",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This route handler performs a file system access, but is not rate-limited."
+              },
+              "location": {
+                "path": "src/routes/files.js",
+                "start_line": 26,
+                "end_line": 37,
+                "start_column": 25,
+                "end_column": 2
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/2",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/2/instances",
+            "cwe": [
+              "CWE-307",
+              "CWE-400",
+              "CWE-770"
+            ]
+          },
+          {
+            "number": 1,
+            "rule": {
+              "id": "js/missing-rate-limiting",
+              "name": "js/missing-rate-limiting",
+              "severity": "high",
+              "description": "Missing rate limiting",
+              "tags": [
+                "external/cwe/cwe-307",
+                "external/cwe/cwe-400",
+                "external/cwe/cwe-770",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "This route handler performs a file system access, but is not rate-limited."
+              },
+              "location": {
+                "path": "src/routes/files.js",
+                "start_line": 10,
+                "end_line": 22,
+                "start_column": 21,
+                "end_column": 2
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/1",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/1/instances",
+            "cwe": [
+              "CWE-307",
+              "CWE-400",
+              "CWE-770"
+            ]
+          }
+        ],
+        "strategy": "severity-then-cwe",
+        "groupKey": "high-CWE-307-part3",
+        "severity": "high",
+        "priority": 84,
+        "status": "pending"
+      },
+      {
+        "id": "3f273ba7-44db-432f-85ae-c988cbfa12f3",
+        "alerts": [
+          {
+            "number": 17,
+            "rule": {
+              "id": "js/reflected-xss",
+              "name": "js/reflected-xss",
+              "severity": "high",
+              "description": "Reflected cross-site scripting",
+              "tags": [
+                "external/cwe/cwe-079",
+                "external/cwe/cwe-116",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "Cross-site scripting vulnerability due to a user-provided value."
+              },
+              "location": {
+                "path": "src/index.js",
+                "start_line": 26,
+                "end_line": 26,
+                "start_column": 12,
+                "end_column": 16
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/17",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/17/instances",
+            "cwe": [
+              "CWE-079",
+              "CWE-116"
+            ]
+          }
+        ],
+        "strategy": "severity-then-cwe",
+        "groupKey": "high-CWE-079",
+        "severity": "high",
+        "priority": 82,
+        "status": "pending"
+      },
+      {
+        "id": "f6671719-4d84-4c82-bf6a-f48062a01e46",
+        "alerts": [
+          {
+            "number": 27,
+            "rule": {
+              "id": "js/http-to-file-access",
+              "name": "js/http-to-file-access",
+              "severity": "medium",
+              "description": "Network data written to file",
+              "tags": [
+                "external/cwe/cwe-434",
+                "external/cwe/cwe-912",
+                "security"
+              ]
+            },
+            "tool": {
+              "name": "CodeQL",
+              "version": "2.23.9"
+            },
+            "most_recent_instance": {
+              "ref": "refs/heads/main",
+              "state": "open",
+              "commit_sha": "0e31be9ccea6f8b45d10f6aa2c8016e2c6fd66cc",
+              "message": {
+                "text": "Write to file system depends on Untrusted data."
+              },
+              "location": {
+                "path": "src/routes/files.js",
+                "start_line": 48,
+                "end_line": 48,
+                "start_column": 32,
+                "end_column": 39
+              }
+            },
+            "state": "open",
+            "created_at": "2026-01-18T00:15:12Z",
+            "updated_at": "2026-01-18T00:19:22Z",
+            "html_url": "https://github.com/tedfoley/vulnerable-demo-app/security/code-scanning/27",
+            "instances_url": "https://api.github.com/repos/tedfoley/vulnerable-demo-app/code-scanning/alerts/27/instances",
+            "cwe": [
+              "CWE-434",
+              "CWE-912"
+            ]
+          }
+        ],
+        "strategy": "severity-then-cwe",
+        "groupKey": "medium-CWE-434",
+        "severity": "medium",
+        "priority": 62,
+        "status": "pending"
+      }
+    ],
+    "sessions": [],
+    "prsCreated": [],
+    "securityPosture": {
+      "before": {
+        "total": 27,
+        "critical": 7,
+        "high": 19,
+        "medium": 1,
+        "low": 0,
+        "timestamp": "2026-01-20T00:47:15.591Z"
+      }
+    },
+    "controlState": {
+      "paused": false,
+      "rebatchRequested": false,
+      "priorityOverrides": {},
+      "skipBatches": []
+    }
+  },
+  "learningStats": {
+    "totalRecords": 0,
+    "overallSuccessRate": 0,
+    "topCWEs": []
+  }
+}
