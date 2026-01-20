@@ -67,7 +67,11 @@ export class DevinOrchestrator {
     const completedSessions = new Map<string, DevinSession>();
     const startTime = Date.now();
 
+    console.log(`[Orchestrator] Starting with ${pendingBatches.length} pending batches, maxParallelSessions=${this.maxParallelSessions}`);
+    
     while (pendingBatches.length > 0 || this.activeSessions.size > 0) {
+      console.log(`[Orchestrator] Loop iteration: pendingBatches=${pendingBatches.length}, activeSessions=${this.activeSessions.size}`);
+      
       // Check for max total polling time
       if (Date.now() - startTime > MAX_TOTAL_POLL_TIME_MS) {
         console.error('Max total polling time exceeded, stopping orchestrator');
@@ -80,11 +84,14 @@ export class DevinOrchestrator {
         continue;
       }
 
+      // Start new sessions if we have capacity
       while (
         this.activeSessions.size < this.maxParallelSessions &&
         pendingBatches.length > 0
       ) {
+        console.log(`[Orchestrator] Starting new session: activeSessions=${this.activeSessions.size} < maxParallel=${this.maxParallelSessions}, pendingBatches=${pendingBatches.length}`);
         const batch = pendingBatches.shift()!;
+        console.log(`[Orchestrator] Starting batch ${batch.id} (${batch.groupKey})`);
         const session = await this.startSession(batch);
         
         if (session) {
@@ -96,10 +103,19 @@ export class DevinOrchestrator {
           batch.sessionId = session.sessionId;
           batch.sessionUrl = session.url;
           batch.startedAt = new Date().toISOString();
+          console.log(`[Orchestrator] Added batch ${batch.id} to activeSessions. Active count: ${this.activeSessions.size}`);
+        } else {
+          console.log(`[Orchestrator] Failed to start session for batch ${batch.id}`);
         }
       }
 
-      for (const [batchId, session] of this.activeSessions.entries()) {
+      // Collect batch IDs to process (avoid modifying map while iterating)
+      const batchIdsToProcess = Array.from(this.activeSessions.keys());
+      console.log(`[Orchestrator] Processing ${batchIdsToProcess.length} active sessions`);
+      
+      for (const batchId of batchIdsToProcess) {
+        const session = this.activeSessions.get(batchId);
+        if (!session) continue;
         const batch = batches.find(b => b.id === batchId)!;
         
         // Check for per-batch timeout
@@ -156,6 +172,7 @@ export class DevinOrchestrator {
             this.pollRetries.delete(batchId);
             this.pollIntervals.delete(batchId);
             this.batchStartTimes.delete(batchId);
+            console.log(`[Orchestrator] Batch ${batchId} completed. Removed from activeSessions. Active count: ${this.activeSessions.size}, Pending: ${pendingBatches.length}`);
             await onComplete(batch, updatedSession);
           }
         } else {
@@ -171,6 +188,7 @@ export class DevinOrchestrator {
             this.pollRetries.delete(batchId);
             this.pollIntervals.delete(batchId);
             this.batchStartTimes.delete(batchId);
+            console.log(`[Orchestrator] Batch ${batchId} failed (max retries). Removed from activeSessions. Active count: ${this.activeSessions.size}, Pending: ${pendingBatches.length}`);
             await onComplete(batch, session);
           } else {
             // Increase poll interval with exponential backoff
