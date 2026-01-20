@@ -17,6 +17,7 @@ const MAX_POLL_INTERVAL_MS = 60000;      // 1 minute max
 const BACKOFF_MULTIPLIER = 1.5;
 const MAX_POLL_RETRIES = 5;              // Max consecutive failures before giving up
 const MAX_TOTAL_POLL_TIME_MS = 3600000;  // 1 hour max total polling time
+const MAX_BATCH_TIME_MS = 1800000;       // 30 minutes max per batch
 
 // Devin API response interfaces
 interface DevinCreateSessionResponse {
@@ -46,6 +47,7 @@ export class DevinOrchestrator {
   private prGenerator: PRGenerator;
   private pollRetries: Map<string, number> = new Map();
   private pollIntervals: Map<string, number> = new Map();
+  private batchStartTimes: Map<string, number> = new Map();
 
   constructor(apiKey: string, maxParallelSessions: number, repository: string, githubToken: string) {
     this.apiKey = apiKey;
@@ -89,6 +91,7 @@ export class DevinOrchestrator {
           this.activeSessions.set(batch.id, session);
           this.pollRetries.set(batch.id, 0);
           this.pollIntervals.set(batch.id, INITIAL_POLL_INTERVAL_MS);
+          this.batchStartTimes.set(batch.id, Date.now());
           batch.status = 'in_progress';
           batch.sessionId = session.sessionId;
           batch.sessionUrl = session.url;
@@ -98,6 +101,21 @@ export class DevinOrchestrator {
 
       for (const [batchId, session] of this.activeSessions.entries()) {
         const batch = batches.find(b => b.id === batchId)!;
+        
+        // Check for per-batch timeout
+        const batchStartTime = this.batchStartTimes.get(batchId) || Date.now();
+        if (Date.now() - batchStartTime > MAX_BATCH_TIME_MS) {
+          console.error(`Batch ${batchId} exceeded max time (${MAX_BATCH_TIME_MS / 60000} minutes), marking as failed`);
+          batch.status = 'failed';
+          batch.completedAt = new Date().toISOString();
+          this.activeSessions.delete(batchId);
+          this.pollRetries.delete(batchId);
+          this.pollIntervals.delete(batchId);
+          this.batchStartTimes.delete(batchId);
+          await onComplete(batch, session);
+          continue;
+        }
+        
         const updatedSession = await this.pollSessionWithBackoff(session.sessionId, batchId);
         
         if (updatedSession) {
@@ -106,8 +124,17 @@ export class DevinOrchestrator {
           this.activeSessions.set(batchId, updatedSession);
           await onProgress(batch, updatedSession);
 
-          if (this.isSessionComplete(updatedSession.status)) {
-            batch.status = updatedSession.status === 'finished' ? 'completed' : 'failed';
+          // Check for completion: either session status is complete OR progress=100 with prUrl
+          const isStatusComplete = this.isSessionComplete(updatedSession.status);
+          const isProgressComplete = updatedSession.structuredOutput?.progress === 100 && 
+            (updatedSession.prUrl || updatedSession.structuredOutput?.prUrl);
+          
+          if (isStatusComplete || isProgressComplete) {
+            if (isProgressComplete && !isStatusComplete) {
+              console.log(`Batch ${batchId} completed via progress=100 with prUrl (status was: ${updatedSession.status})`);
+            }
+            // If completed via progress=100 with prUrl, mark as completed regardless of status
+            batch.status = isProgressComplete ? 'completed' : (updatedSession.status === 'finished' ? 'completed' : 'failed');
             batch.completedAt = new Date().toISOString();
             
             // Get PR URL from API response (pull_request.url) or structured output
@@ -128,6 +155,7 @@ export class DevinOrchestrator {
             this.activeSessions.delete(batchId);
             this.pollRetries.delete(batchId);
             this.pollIntervals.delete(batchId);
+            this.batchStartTimes.delete(batchId);
             await onComplete(batch, updatedSession);
           }
         } else {
@@ -142,6 +170,7 @@ export class DevinOrchestrator {
             this.activeSessions.delete(batchId);
             this.pollRetries.delete(batchId);
             this.pollIntervals.delete(batchId);
+            this.batchStartTimes.delete(batchId);
             await onComplete(batch, session);
           } else {
             // Increase poll interval with exponential backoff
@@ -300,6 +329,9 @@ export class DevinOrchestrator {
       }
 
       const data = await response.json() as DevinSessionResponse;
+      
+      // Log actual status values for debugging
+      console.log(`Session ${sessionId} status: ${data.status}, status_enum: ${data.status_enum}, progress: ${data.structured_output?.progress || 0}%`);
       
       // Reset interval on successful poll
       this.pollIntervals.set(batchId, INITIAL_POLL_INTERVAL_MS);
