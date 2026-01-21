@@ -1533,11 +1533,11 @@
       {
         "sessionId": "devin-ed870fd1f4bf4dfd96585327423aff6d",
         "url": "https://app.devin.ai/sessions/devin-ed870fd1f4bf4dfd96585327423aff6d",
-        "status": "pending",
+        "status": "working",
         "batchId": "1516c247-cf0e-42a7-a1ac-d33258e2dfdb",
         "structuredOutput": null,
         "createdAt": "2026-01-21T23:57:02.863096Z",
-        "updatedAt": "2026-01-21T23:57:05.069447Z",
+        "updatedAt": "2026-01-21T23:57:33.282136Z",
         "messages": [
           {
             "timestamp": "2026-01-21T23:57:02.867820+00:00"
