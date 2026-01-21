@@ -200,7 +200,10 @@
         "groupKey": "critical-CWE-078",
         "severity": "critical",
         "priority": 108,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "devin-15d0ec0226f843c3bf5cfbef1f3b9809",
+        "sessionUrl": "https://app.devin.ai/sessions/15d0ec0226f843c3bf5cfbef1f3b9809",
+        "startedAt": "2026-01-21T23:54:25.364Z"
       },
       {
         "id": "f025cb03-c0d4-4ed7-9c3e-2c66e6b6024b",
@@ -330,7 +333,10 @@
         "groupKey": "critical-CWE-843",
         "severity": "critical",
         "priority": 106,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "devin-367ff27422084ee7bf0234ff2e9e5d24",
+        "sessionUrl": "https://app.devin.ai/sessions/367ff27422084ee7bf0234ff2e9e5d24",
+        "startedAt": "2026-01-21T23:54:25.792Z"
       },
       {
         "id": "0db8d3e1-507e-4709-97ab-dedd199388aa",
@@ -560,7 +566,10 @@
         "groupKey": "high-CWE-307-part1",
         "severity": "high",
         "priority": 90,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "devin-ccddee5dc072497e9397b5ef0a60f375",
+        "sessionUrl": "https://app.devin.ai/sessions/ccddee5dc072497e9397b5ef0a60f375",
+        "startedAt": "2026-01-21T23:54:26.209Z"
       },
       {
         "id": "1516c247-cf0e-42a7-a1ac-d33258e2dfdb",
@@ -1291,7 +1300,22 @@
         "status": "pending"
       }
     ],
-    "sessions": [],
+    "sessions": [
+      {
+        "sessionId": "devin-15d0ec0226f843c3bf5cfbef1f3b9809",
+        "url": "https://app.devin.ai/sessions/devin-15d0ec0226f843c3bf5cfbef1f3b9809",
+        "status": "pending",
+        "batchId": "16cf527f-72fa-4051-b5fd-9b4f820f57d0",
+        "structuredOutput": null,
+        "createdAt": "2026-01-21T23:54:25.243336Z",
+        "updatedAt": "2026-01-21T23:54:25.831996Z",
+        "messages": [
+          {
+            "timestamp": "2026-01-21T23:54:25.248689+00:00"
+          }
+        ]
+      }
+    ],
     "prsCreated": [],
     "securityPosture": {
       "before": {
