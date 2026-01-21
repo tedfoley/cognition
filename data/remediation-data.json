@@ -1456,51 +1456,51 @@
             {
               "status": "completed",
               "filePath": "src/routes/admin.js",
-              "fixedCode": "router.get('/ping', commandRateLimiter, (req, res) => { const host = req.query.host; exec('ping -c 4 ' + host, (error, stdout, stderr) => { if (error) { res.status(500).json({ error: stderr }); } else { res.send(`<pre>${stdout}</pre>`); } }); });",
+              "fixedCode": "router.post('/backup', commandRateLimiter, authenticate, (req, res) => {",
               "alertNumber": 12,
-              "explanation": "Added rate limiting to the /ping route to prevent abuse.",
+              "explanation": "Added rate limiting to the /backup route to prevent abuse.",
               "testsPassed": null,
-              "originalCode": "router.get('/ping', (req, res) => { const host = req.query.host; exec('ping -c 4 ' + host, (error, stdout, stderr) => { if (error) { res.status(500).json({ error: stderr }); } else { res.send(`<pre>${stdout}</pre>`); } }); });",
+              "originalCode": "router.post('/backup', authenticate, (req, res) => {",
               "confidenceScore": 0.9
             },
             {
               "status": "completed",
               "filePath": "src/routes/users.js",
-              "fixedCode": "router.get('/search', dbAccessRateLimiter, (req, res) => { const username = req.query.username; const query = \"SELECT id, username, email FROM users WHERE username = '\" + username + \"'\"; try { const users = db.prepare(query).all(); res.json(users); } catch (error) { res.status(500).json({ error: error.message }); }});",
+              "fixedCode": "router.post('/login', dbAccessRateLimiter, (req, res) => {",
               "alertNumber": 11,
-              "explanation": "Added rate limiting to the /search route to prevent abuse.",
+              "explanation": "Added rate limiting to the /login route to prevent abuse.",
               "testsPassed": null,
-              "originalCode": "router.get('/search', (req, res) => { const username = req.query.username; const query = \"SELECT id, username, email FROM users WHERE username = '\" + username + \"'\"; try { const users = db.prepare(query).all(); res.json(users); } catch (error) { res.status(500).json({ error: error.message }); }});",
+              "originalCode": "router.post('/login', (req, res) => {",
               "confidenceScore": 0.9
             },
             {
               "status": "completed",
               "filePath": "src/routes/admin.js",
-              "fixedCode": "router.get('/lookup', commandRateLimiter, (req, res) => { const domain = req.query.domain; const command = 'nslookup ' + domain; exec(command, (error, stdout, stderr) => { if (error) { res.status(500).json({ error: stderr }); } else { res.json({ result: stdout }); } }); });",
+              "fixedCode": "router.get('/lookup', commandRateLimiter, (req, res) => {",
               "alertNumber": 10,
               "explanation": "Added rate limiting to the /lookup route to prevent abuse.",
               "testsPassed": null,
-              "originalCode": "router.get('/lookup', (req, res) => { const domain = req.query.domain; const command = 'nslookup ' + domain; exec(command, (error, stdout, stderr) => { if (error) { res.status(500).json({ error: stderr }); } else { res.json({ result: stdout }); } }); });",
+              "originalCode": "router.get('/lookup', (req, res) => {",
               "confidenceScore": 0.9
             },
             {
               "status": "completed",
               "filePath": "src/routes/users.js",
-              "fixedCode": "router.post('/login', dbAccessRateLimiter, (req, res) => { const { username, password } = req.body; const query = \"SELECT * FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\"; try { const user = db.prepare(query).get(); if (user) { res.json({ success: true, message: 'Login successful', userId: user.id }); } else { res.status(401).json({ success: false, message: 'Invalid credentials' }); } } catch (error) { res.status(500).json({ error: error.message }); }});",
+              "fixedCode": "router.get('/safe-search', dbAccessRateLimiter, (req, res) => {",
               "alertNumber": 9,
-              "explanation": "Added rate limiting to the /login route to prevent abuse.",
+              "explanation": "Added rate limiting to the /safe-search route to prevent abuse.",
               "testsPassed": null,
-              "originalCode": "router.post('/login', (req, res) => { const { username, password } = req.body; const query = \"SELECT * FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\"; try { const user = db.prepare(query).get(); if (user) { res.json({ success: true, message: 'Login successful', userId: user.id }); } else { res.status(401).json({ success: false, message: 'Invalid credentials' }); } } catch (error) { res.status(500).json({ error: error.message }); }});",
+              "originalCode": "router.get('/safe-search', (req, res) => {",
               "confidenceScore": 0.9
             },
             {
               "status": "completed",
               "filePath": "src/routes/admin.js",
-              "fixedCode": "router.post('/backup', commandRateLimiter, authenticate, (req, res) => { const filename = req.body.filename; exec(`tar -czf /tmp/${filename}.tar.gz /var/log`, (error, stdout, stderr) => { if (error) { res.status(500).json({ error: stderr }); } else { res.json({ success: true, message: `Backup created: ${filename}.tar.gz` }); } }); });",
+              "fixedCode": "router.get('/ping', commandRateLimiter, (req, res) => {",
               "alertNumber": 8,
-              "explanation": "Added rate limiting to the /backup route to prevent abuse.",
+              "explanation": "Added rate limiting to the /ping route to prevent abuse.",
               "testsPassed": null,
-              "originalCode": "router.post('/backup', authenticate, (req, res) => { const filename = req.body.filename; exec(`tar -czf /tmp/${filename}.tar.gz /var/log`, (error, stdout, stderr) => { if (error) { res.status(500).json({ error: stderr }); } else { res.json({ success: true, message: `Backup created: ${filename}.tar.gz` }); } }); });",
+              "originalCode": "router.get('/ping', (req, res) => {",
               "confidenceScore": 0.9
             }
           ],
@@ -1515,7 +1515,7 @@
             "alertsAnalyzed": 5,
             "repositoryCloned": true
           },
-          "currentTask": "Implement rate limiting fixes for all affected routes",
+          "currentTask": "Implementing rate limiting fixes for CodeQL alerts",
           "confidenceScore": 0.9,
           "confidenceExplanation": "The fixes are straightforward and follow established security patterns."
         },
