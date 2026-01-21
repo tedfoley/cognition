@@ -1309,60 +1309,60 @@
         "structuredOutput": {
           "fixes": [
             {
-              "status": "pending",
+              "status": "in_progress",
               "filePath": "src/routes/admin.js",
               "fixedCode": "",
-              "alertNumber": 16,
-              "explanation": "",
+              "alertNumber": 13,
+              "explanation": "User input 'host' is directly concatenated into the command, leading to command injection vulnerability. The fix will involve using execFile with input validation.",
               "testsPassed": null,
-              "originalCode": "",
-              "confidenceScore": null
-            },
-            {
-              "status": "pending",
-              "filePath": "src/routes/admin.js",
-              "fixedCode": "",
-              "alertNumber": 15,
-              "explanation": "",
-              "testsPassed": null,
-              "originalCode": "",
-              "confidenceScore": null
+              "originalCode": "exec('ping -c 4 ' + host, (error, stdout, stderr) => {",
+              "confidenceScore": 0.7
             },
             {
               "status": "pending",
               "filePath": "src/routes/admin.js",
               "fixedCode": "",
               "alertNumber": 14,
-              "explanation": "",
+              "explanation": "User input 'filename' is directly interpolated into the command, leading to command injection vulnerability. The fix will involve using execFile with input validation.",
               "testsPassed": null,
-              "originalCode": "",
-              "confidenceScore": null
+              "originalCode": "exec(`tar -czf /tmp/${filename}.tar.gz /var/log`, (error, stdout, stderr) => {",
+              "confidenceScore": 0.7
             },
             {
               "status": "pending",
               "filePath": "src/routes/admin.js",
               "fixedCode": "",
-              "alertNumber": 13,
-              "explanation": "",
+              "alertNumber": 15,
+              "explanation": "User input 'domain' is directly concatenated into the command, leading to command injection vulnerability. The fix will involve using execFile with input validation.",
               "testsPassed": null,
-              "originalCode": "",
-              "confidenceScore": null
+              "originalCode": "exec(command, (error, stdout, stderr) => {",
+              "confidenceScore": 0.7
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/admin.js",
+              "fixedCode": "",
+              "alertNumber": 16,
+              "explanation": "User input 'host' is directly interpolated into the command, leading to command injection vulnerability. The fix will involve using execFile with input validation.",
+              "testsPassed": null,
+              "originalCode": "exec(`ping -c 4 ${host}`, (error, stdout, stderr) => {",
+              "confidenceScore": 0.7
             }
           ],
           "prUrl": null,
-          "progress": 20,
+          "progress": 50,
           "checklist": {
             "testsRun": false,
             "prCreated": false,
             "alertsFixed": 0,
-            "testsPassed": false,
+            "testsPassed": null,
             "branchCreated": true,
-            "alertsAnalyzed": 0,
+            "alertsAnalyzed": 4,
             "repositoryCloned": true
           },
           "currentTask": "Analyze all 4 command-line injection vulnerabilities in src/routes/admin.js",
-          "confidenceScore": null,
-          "confidenceExplanation": ""
+          "confidenceScore": 0.7,
+          "confidenceExplanation": "The fixes are straightforward and follow established security patterns, but implementation is still pending."
         },
         "createdAt": "2026-01-21T23:54:25.243336Z",
         "updatedAt": "2026-01-21T23:55:16.436082Z",
