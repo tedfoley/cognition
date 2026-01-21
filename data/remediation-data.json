@@ -1387,29 +1387,29 @@
               "filePath": "src/routes/files.js",
               "fixedCode": "const rawFilename = req.query.filename;\nif (Array.isArray(rawFilename)) {\n  return res.status(400).json({ error: 'Invalid filename parameter' });\n}\nconst filename = typeof rawFilename === 'string' ? rawFilename : '';",
               "alertNumber": 26,
-              "explanation": "Ensured that the filename parameter is treated as a string to prevent type confusion attacks (CWE-843). This prevents potential issues when the parameter is passed as an array.",
+              "explanation": "Ensured that the filename parameter is treated as a string to prevent type confusion attacks. Added a check to reject array parameters.",
               "testsPassed": null,
-              "originalCode": "const filename = req.query.filename;",
+              "originalCode": "const filename = req.query.filename;\nif (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {\n  return res.status(400).json({ error: 'Invalid filename' });\n}",
               "confidenceScore": 0.9
             },
             {
               "status": "pending",
               "filePath": "src/routes/files.js",
-              "fixedCode": "",
+              "fixedCode": null,
               "alertNumber": 25,
-              "explanation": "",
+              "explanation": null,
               "testsPassed": null,
-              "originalCode": "",
+              "originalCode": "const filename = req.query.filename;\nif (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {\n  return res.status(400).json({ error: 'Invalid filename' });\n}",
               "confidenceScore": null
             },
             {
               "status": "pending",
               "filePath": "src/routes/files.js",
-              "fixedCode": "",
+              "fixedCode": null,
               "alertNumber": 24,
-              "explanation": "",
+              "explanation": null,
               "testsPassed": null,
-              "originalCode": "",
+              "originalCode": "const filename = req.query.filename;\nif (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {\n  return res.status(400).json({ error: 'Invalid filename' });\n}",
               "confidenceScore": null
             }
           ],
@@ -1424,9 +1424,9 @@
             "alertsAnalyzed": 1,
             "repositoryCloned": true
           },
-          "currentTask": "Implement fix for type confusion through parameter tampering",
+          "currentTask": "Implement fixes for CodeQL alerts",
           "confidenceScore": 0.9,
-          "confidenceExplanation": "The fix is straightforward and follows established security patterns."
+          "confidenceExplanation": "The implemented fix is straightforward and follows established security patterns."
         },
         "createdAt": "2026-01-21T23:54:25.670234Z",
         "updatedAt": "2026-01-21T23:54:46.645112Z",
