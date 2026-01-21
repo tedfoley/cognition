@@ -1328,6 +1328,20 @@
             "timestamp": "2026-01-21T23:54:25.674569+00:00"
           }
         ]
+      },
+      {
+        "sessionId": "devin-ccddee5dc072497e9397b5ef0a60f375",
+        "url": "https://app.devin.ai/sessions/devin-ccddee5dc072497e9397b5ef0a60f375",
+        "status": "pending",
+        "batchId": "0db8d3e1-507e-4709-97ab-dedd199388aa",
+        "structuredOutput": null,
+        "createdAt": "2026-01-21T23:54:26.079455Z",
+        "updatedAt": "2026-01-21T23:54:26.421729Z",
+        "messages": [
+          {
+            "timestamp": "2026-01-21T23:54:26.087102+00:00"
+          }
+        ]
       }
     ],
     "prsCreated": [],
