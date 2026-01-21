@@ -1370,8 +1370,9 @@
           "confidenceScore": 0.9,
           "confidenceExplanation": "All vulnerabilities have been addressed with secure coding practices."
         },
+        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/10",
         "createdAt": "2026-01-21T23:54:25.243336Z",
-        "updatedAt": "2026-01-21T23:55:16.436082Z",
+        "updatedAt": "2026-01-21T23:58:17.868498Z",
         "messages": [
           {
             "timestamp": "2026-01-21T23:54:25.248689+00:00"
