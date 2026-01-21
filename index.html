@@ -30,9 +30,11 @@
       useEffect(() => {
         const fetchData = async () => {
           try {
+            // Add cache-busting timestamp to prevent stale data from GitHub Pages caching
+            const cacheBuster = `?t=${Date.now()}`;
             const [runResponse, controlResponse] = await Promise.all([
-              fetch('data/remediation-data.json'),
-              fetch('data/control-state.json').catch(() => ({ ok: false }))
+              fetch(`data/remediation-data.json${cacheBuster}`),
+              fetch(`data/control-state.json${cacheBuster}`).catch(() => ({ ok: false }))
             ]);
 
             if (runResponse.ok) {
@@ -53,7 +55,8 @@
         };
 
         fetchData();
-        const interval = setInterval(fetchData, 10000);
+        // Poll every 5 seconds for more responsive updates
+        const interval = setInterval(fetchData, 5000);
         return () => clearInterval(interval);
       }, []);
 
@@ -85,7 +88,7 @@
           <ProgressOverview run={run} />
           <SecurityPosture run={run} />
           <BatchProgress batches={run.batches} />
-          <SessionList sessions={run.sessions} />
+          <SessionList sessions={run.sessions} batches={run.batches} />
           <LearningStats stats={learningStats} />
         </div>
       );
@@ -262,7 +265,34 @@
 
     function SecurityPosture({ run }) {
       const { before, after } = run.securityPosture;
-      const improvement = after ? before.total - after.total : 0;
+      
+      // Calculate projected "After" based on in-progress and completed batches
+      const calculateProjected = () => {
+        const projected = { ...before };
+        
+        // Count alerts being fixed by in-progress and completed batches
+        const activeBatches = run.batches.filter(b => 
+          b.status === 'in_progress' || b.status === 'completed'
+        );
+        
+        activeBatches.forEach(batch => {
+          if (batch.alerts) {
+            batch.alerts.forEach(alert => {
+              const severity = alert.rule?.security_severity_level || 'low';
+              if (projected[severity] > 0) {
+                projected[severity]--;
+              }
+            });
+          }
+        });
+        
+        projected.total = projected.critical + projected.high + projected.medium + projected.low;
+        return projected;
+      };
+      
+      const projectedAfter = after || calculateProjected();
+      const isProjected = !after;
+      const improvement = before.total - projectedAfter.total;
 
       return (
         <div className="mb-8 bg-gray-800 rounded-lg p-6">
@@ -273,14 +303,16 @@
               <SeverityBars score={before} />
             </div>
             <div>
-              <h3 className="text-gray-400 mb-2">After {after ? '' : '(Projected)'}</h3>
-              <SeverityBars score={after || before} projected={!after} />
+              <h3 className="text-gray-400 mb-2">
+                After {isProjected && <span className="text-yellow-400 text-sm">(Projected)</span>}
+              </h3>
+              <SeverityBars score={projectedAfter} projected={isProjected} />
             </div>
           </div>
           {improvement > 0 && (
             <div className="mt-4 text-center">
-              <span className="text-green-400 text-lg font-bold">
-                {improvement} vulnerabilities fixed!
+              <span className={`${isProjected ? 'text-yellow-400' : 'text-green-400'} text-lg font-bold`}>
+                {improvement} vulnerabilities {isProjected ? 'being fixed' : 'fixed'}!
               </span>
             </div>
           )}
@@ -328,6 +360,7 @@
     }
 
     function BatchCard({ batch }) {
+      const [expanded, setExpanded] = useState(false);
       const statusColors = {
         pending: 'bg-gray-600',
         in_progress: 'bg-blue-500 animate-pulse',
@@ -335,17 +368,53 @@
         failed: 'bg-red-500',
       };
 
+      // Get progress from session structured output if available
+      const progress = batch.sessionProgress || 0;
+
+      // Format timestamp
+      const formatTime = (isoString) => {
+        if (!isoString) return null;
+        const date = new Date(isoString);
+        return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      };
+
       return (
         <div className="bg-gray-800 rounded-lg p-4">
-          <div className="flex items-center justify-between">
+          <div 
+            className="flex items-center justify-between cursor-pointer"
+            onClick={() => setExpanded(!expanded)}
+          >
             <div className="flex items-center gap-3">
               <div className={`w-3 h-3 rounded-full ${statusColors[batch.status]}`}></div>
               <div>
                 <span className="font-medium">{batch.groupKey}</span>
                 <span className="text-gray-400 ml-2">({batch.alerts.length} alerts)</span>
               </div>
+              {/* Progress bar for in-progress batches */}
+              {batch.status === 'in_progress' && (
+                <div className="flex items-center gap-2 ml-4">
+                  <div className="w-24 bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-blue-400 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-sm text-blue-400">{progress}%</span>
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-4">
+              {/* Timestamps */}
+              {batch.startedAt && (
+                <span className="text-xs text-gray-500">
+                  Started: {formatTime(batch.startedAt)}
+                </span>
+              )}
+              {batch.completedAt && (
+                <span className="text-xs text-gray-500">
+                  Completed: {formatTime(batch.completedAt)}
+                </span>
+              )}
               <span className={`px-2 py-1 rounded text-xs ${
                 batch.severity === 'critical' ? 'bg-red-600' :
                 batch.severity === 'high' ? 'bg-orange-500' :
@@ -359,52 +428,105 @@
                 </span>
               )}
               {batch.sessionUrl && (
-                <a href={batch.sessionUrl} target="_blank" className="text-blue-400 hover:underline text-sm">
+                <a href={batch.sessionUrl} target="_blank" className="text-blue-400 hover:underline text-sm" onClick={(e) => e.stopPropagation()}>
                   View Session
                 </a>
               )}
               {batch.prUrl && (
-                <a href={batch.prUrl} target="_blank" className="text-green-400 hover:underline text-sm">
+                <a href={batch.prUrl} target="_blank" className="text-green-400 hover:underline text-sm" onClick={(e) => e.stopPropagation()}>
                   View PR
                 </a>
               )}
+              {/* Expand/collapse indicator */}
+              <span className="text-gray-400 text-sm">{expanded ? '▼' : '▶'}</span>
             </div>
           </div>
+          
+          {/* Expanded alerts section */}
+          {expanded && batch.alerts && batch.alerts.length > 0 && (
+            <div className="mt-4 pl-6 border-l-2 border-gray-700">
+              <h4 className="text-sm font-medium text-gray-400 mb-2">Alerts in this batch:</h4>
+              <div className="space-y-2">
+                {batch.alerts.map((alert, idx) => (
+                  <div key={idx} className="bg-gray-700 rounded p-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{alert.rule?.name || alert.rule_id || 'Unknown Rule'}</span>
+                      <span className={`px-2 py-0.5 rounded text-xs ${
+                        alert.rule?.security_severity_level === 'critical' ? 'bg-red-600' :
+                        alert.rule?.security_severity_level === 'high' ? 'bg-orange-500' :
+                        alert.rule?.security_severity_level === 'medium' ? 'bg-yellow-500' : 'bg-blue-400'
+                      }`}>
+                        {alert.rule?.security_severity_level || 'unknown'}
+                      </span>
+                    </div>
+                    <p className="text-gray-400 mt-1">{alert.most_recent_instance?.location?.path || 'Unknown file'}:{alert.most_recent_instance?.location?.start_line || '?'}</p>
+                    {alert.rule?.description && (
+                      <p className="text-gray-500 mt-1 text-xs">{alert.rule.description.substring(0, 150)}...</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       );
     }
 
-    function SessionList({ sessions }) {
+    function SessionList({ sessions, batches }) {
       if (!sessions || sessions.length === 0) return null;
+
+      // Create a map of sessionId to batch for quick lookup
+      const sessionToBatch = {};
+      if (batches) {
+        batches.forEach(batch => {
+          if (batch.sessionId) {
+            sessionToBatch[batch.sessionId] = batch;
+          }
+        });
+      }
 
       return (
         <div className="mb-8">
           <h2 className="text-xl font-bold mb-4">Active Sessions</h2>
           <div className="grid grid-cols-2 gap-4">
-            {sessions.map((session) => (
-              <div key={session.sessionId} className="bg-gray-800 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium">Session {session.sessionId.slice(0, 8)}...</span>
-                  <span className={`px-2 py-1 rounded text-xs ${
-                    session.status === 'working' ? 'bg-blue-500' :
-                    session.status === 'finished' ? 'bg-green-500' :
-                    session.status === 'blocked' ? 'bg-yellow-500' :
-                    session.status === 'expired' ? 'bg-red-500' : 'bg-gray-500'
-                  }`}>
-                    {session.status}
-                  </span>
-                </div>
-                {session.structuredOutput && (
-                  <div className="text-sm text-gray-400">
-                    <p>Progress: {session.structuredOutput.progress || 0}%</p>
-                    <p>Current: {session.structuredOutput.currentTask || 'N/A'}</p>
+            {sessions.map((session) => {
+              const batch = sessionToBatch[session.sessionId];
+              const displayName = batch ? batch.groupKey : `Session ${session.sessionId.slice(0, 8)}...`;
+              
+              return (
+                <div key={session.sessionId} className="bg-gray-800 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium">{displayName}</span>
+                    <span className={`px-2 py-1 rounded text-xs ${
+                      session.status === 'working' ? 'bg-blue-500' :
+                      session.status === 'finished' ? 'bg-green-500' :
+                      session.status === 'blocked' ? 'bg-yellow-500' :
+                      session.status === 'expired' ? 'bg-red-500' : 'bg-gray-500'
+                    }`}>
+                      {session.status}
+                    </span>
                   </div>
-                )}
-                <a href={session.url} target="_blank" className="text-blue-400 hover:underline text-sm mt-2 block">
-                  Open in Devin
-                </a>
-              </div>
-            ))}
+                  {session.structuredOutput && (
+                    <div className="text-sm text-gray-400">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span>Progress:</span>
+                        <div className="flex-1 bg-gray-700 rounded-full h-2">
+                          <div 
+                            className="bg-blue-400 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${session.structuredOutput.progress || 0}%` }}
+                          ></div>
+                        </div>
+                        <span>{session.structuredOutput.progress || 0}%</span>
+                      </div>
+                      <p>Current: {session.structuredOutput.currentTask || 'N/A'}</p>
+                    </div>
+                  )}
+                  <a href={session.url} target="_blank" className="text-blue-400 hover:underline text-sm mt-2 block">
+                    Open in Devin
+                  </a>
+                </div>
+              );
+            })}
           </div>
         </div>
       );
