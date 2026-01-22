@@ -146,7 +146,11 @@ async function run(): Promise<void> {
     };
 
     const onProgress = async (batch: AlertBatch, session: DevinSession): Promise<void> => {
-      core.info(`Batch ${batch.id} progress: ${session.structuredOutput?.progress || 0}%`);
+      const progress = session.structuredOutput?.progress || 0;
+      core.info(`Batch ${batch.id} progress: ${progress}%`);
+      
+      // Update batch with session progress for dashboard
+      batch.sessionProgress = progress;
       
       const sessionIndex = remediationRun.sessions.findIndex(s => s.sessionId === session.sessionId);
       if (sessionIndex >= 0) {

@@ -806,12 +806,19 @@ class DashboardPublisher {
         this.branch = branch;
     }
     async publishRunData(run, learningStore) {
-        const dashboardData = {
-            run,
-            learningStats: this.calculateLearningStats(learningStore),
-        };
-        await this.writeFile(DASHBOARD_DATA_PATH, JSON.stringify(dashboardData, null, 2), `Update remediation run data: ${run.id}`);
-        return this.getDashboardUrl();
+        try {
+            const dashboardData = {
+                run,
+                learningStats: this.calculateLearningStats(learningStore),
+            };
+            await this.writeFile(DASHBOARD_DATA_PATH, JSON.stringify(dashboardData, null, 2), `Update remediation run data: ${run.id}`);
+            console.log(`Successfully published dashboard data for run ${run.id}`);
+            return this.getDashboardUrl();
+        }
+        catch (error) {
+            console.error(`Failed to publish dashboard data for run ${run.id}:`, error);
+            throw error;
+        }
     }
     async updateBatchStatus(runId, batch) {
         const data = await this.readRunData();
@@ -1039,8 +1046,8 @@ class DashboardPublisher {
       useEffect(() => {
         const fetchData = async () => {
           try {
-            // Add cache-busting timestamp to prevent stale data from GitHub Pages caching
-            const cacheBuster = \`?t=\${Date.now()}\`;
+            // Add cache-busting timestamp and random component to prevent stale data from GitHub Pages caching
+            const cacheBuster = \`?t=\${Date.now()}&r=\${Math.random().toString(36).substr(2, 9)}\`;
             const [runResponse, controlResponse] = await Promise.all([
               fetch(\`data/remediation-data.json\${cacheBuster}\`),
               fetch(\`data/control-state.json\${cacheBuster}\`).catch(() => ({ ok: false }))
@@ -1140,55 +1147,29 @@ class DashboardPublisher {
     }
 
     function ControlPanel({ run, controlState }) {
-      const [showControlInfo, setShowControlInfo] = useState(false);
-      
-      const handlePauseClick = () => {
-        setShowControlInfo(true);
-      };
-
-      const handleResumeClick = () => {
-        setShowControlInfo(true);
-      };
-
       if (run.status === 'completed' || run.status === 'failed') {
         return null;
       }
+
+      const workflowUrl = \`https://github.com/\${run.repository}/actions\`;
 
       return (
         <div className="mb-6 bg-gray-800 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Controls</h2>
-            <div className="flex gap-3">
-              {!controlState?.paused ? (
-                <button
-                  onClick={handlePauseClick}
-                  className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg font-medium transition-colors"
-                >
-                  Pause
-                </button>
-              ) : (
-                <button
-                  onClick={handleResumeClick}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium transition-colors"
-                >
-                  Resume
-                </button>
-              )}
+            <div className="flex gap-3 items-center">
+              <span className={\`px-3 py-1 rounded-full text-sm \${controlState?.paused ? 'bg-yellow-600' : 'bg-gray-600'}\`}>
+                {controlState?.paused ? 'Paused' : 'Running'}
+              </span>
+              <a 
+                href={workflowUrl} 
+                target="_blank" 
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors text-sm"
+              >
+                Manage via Actions
+              </a>
             </div>
           </div>
-          {showControlInfo && (
-            <div className="mt-3 p-3 bg-gray-700 rounded-lg text-sm">
-              <p className="text-yellow-400 font-medium mb-2">Manual Control Required</p>
-              <p className="text-gray-300">
-                To pause/resume the remediation run, please contact your repository admin or 
-                trigger a workflow dispatch event with the appropriate control action.
-              </p>
-              <p className="text-gray-400 mt-2">
-                Alternatively, you can manually update the control state file at: 
-                <code className="ml-1 bg-gray-600 px-1 rounded">data/control-state.json</code>
-              </p>
-            </div>
-          )}
         </div>
       );
     }
@@ -1202,12 +1183,13 @@ class DashboardPublisher {
       
       // Estimate based on average time per batch (assume ~15 min per batch if no data)
       const AVG_MINUTES_PER_BATCH = 15;
-      const estimatedMinutesRemaining = (pendingBatches + inProgressBatches * 0.5) * AVG_MINUTES_PER_BATCH;
       
       // Calculate actual average if we have completed batches with timing data
       let actualAvgMinutes = AVG_MINUTES_PER_BATCH;
+      let timeSource = 'estimated';
       const completedWithTiming = run.batches.filter(b => b.startedAt && b.completedAt);
-      if (completedWithTiming.length > 0) {
+      if (completedWithTiming.length >= 2) {
+        timeSource = \`based on \${completedWithTiming.length} completed\`;
         const totalMinutes = completedWithTiming.reduce((sum, b) => {
           const start = new Date(b.startedAt).getTime();
           const end = new Date(b.completedAt).getTime();
@@ -1257,6 +1239,7 @@ class DashboardPublisher {
             <div>
               <p className="text-gray-400">Est. Time Left</p>
               <p className="text-xl font-bold text-yellow-400">{formatTime(refinedEstimate)}</p>
+              <p className="text-xs text-gray-500">{timeSource}</p>
             </div>
           </div>
         </div>
@@ -1457,20 +1440,33 @@ class DashboardPublisher {
               <h4 className="text-sm font-medium text-gray-400 mb-2">Alerts in this batch:</h4>
               <div className="space-y-2">
                 {batch.alerts.map((alert, idx) => (
-                  <div key={idx} className="bg-gray-700 rounded p-3 text-sm">
+                  <div key={alert.number || idx} className="bg-gray-700 rounded p-3 text-sm">
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">{alert.rule?.name || alert.rule_id || 'Unknown Rule'}</span>
+                      <span className="font-medium">#{alert.number}: {alert.rule?.name || 'Unknown Rule'}</span>
                       <span className={\`px-2 py-0.5 rounded text-xs \${
-                        alert.rule?.security_severity_level === 'critical' ? 'bg-red-600' :
-                        alert.rule?.security_severity_level === 'high' ? 'bg-orange-500' :
-                        alert.rule?.security_severity_level === 'medium' ? 'bg-yellow-500' : 'bg-blue-400'
+                        alert.rule?.severity === 'critical' ? 'bg-red-600' :
+                        alert.rule?.severity === 'high' ? 'bg-orange-500' :
+                        alert.rule?.severity === 'medium' ? 'bg-yellow-500' : 'bg-blue-400'
                       }\`}>
-                        {alert.rule?.security_severity_level || 'unknown'}
+                        {alert.rule?.severity || 'unknown'}
                       </span>
                     </div>
-                    <p className="text-gray-400 mt-1">{alert.most_recent_instance?.location?.path || 'Unknown file'}:{alert.most_recent_instance?.location?.start_line || '?'}</p>
-                    {alert.rule?.description && (
-                      <p className="text-gray-500 mt-1 text-xs">{alert.rule.description.substring(0, 150)}...</p>
+                    <p className="text-gray-400 mt-1">
+                      {alert.most_recent_instance?.location?.path || 'Unknown file'}
+                      <span className="ml-2">Line {alert.most_recent_instance?.location?.start_line || '?'}</span>
+                    </p>
+                    {alert.cwe && alert.cwe.length > 0 && (
+                      <p className="text-blue-400 mt-1 text-xs">
+                        {alert.cwe.join(', ')}
+                      </p>
+                    )}
+                    <p className="text-gray-500 mt-1 text-xs">
+                      {alert.most_recent_instance?.message?.text || alert.rule?.description || 'No description'}
+                    </p>
+                    {alert.html_url && (
+                      <a href={alert.html_url} target="_blank" className="text-blue-400 hover:underline text-xs mt-1 block" onClick={(e) => e.stopPropagation()}>
+                        View on GitHub
+                      </a>
                     )}
                   </div>
                 ))}
@@ -1602,17 +1598,25 @@ const BACKOFF_MULTIPLIER = 1.5;
 const MAX_POLL_RETRIES = 5; // Max consecutive failures before giving up
 const MAX_TOTAL_POLL_TIME_MS = 3600000; // 1 hour max total polling time
 const MAX_BATCH_TIME_MS = 1800000; // 30 minutes max per batch
+// Rate limiting and session management
+const SESSION_START_DELAY_MS = 30000; // 30 seconds between session starts
+const RATE_LIMIT_WAIT_MS = 60000; // 60 seconds wait when rate limited
+const MAX_CONCURRENT_SESSIONS = 5; // Devin's concurrent session limit
 class DevinOrchestrator {
     constructor(apiKey, maxParallelSessions, repository, githubToken) {
         this.activeSessions = new Map();
         this.pollRetries = new Map();
         this.pollIntervals = new Map();
         this.batchStartTimes = new Map();
+        this.lastSessionStartTime = 0;
+        this.rateLimitHits = 0;
         this.apiKey = apiKey;
-        this.maxParallelSessions = maxParallelSessions;
+        // Use the smaller of configured max and conservative limit to avoid hitting Devin's session limit
+        this.maxParallelSessions = Math.min(maxParallelSessions, MAX_CONCURRENT_SESSIONS - 1);
         this.repository = repository;
         this.octokit = new rest_1.Octokit({ auth: githubToken });
         this.prGenerator = new prGenerator_1.PRGenerator(repository);
+        console.log(`[Orchestrator] Initialized with maxParallelSessions=${this.maxParallelSessions} (configured: ${maxParallelSessions}, limit: ${MAX_CONCURRENT_SESSIONS})`);
     }
     async processBatches(batches, onProgress, onComplete, checkPaused) {
         const pendingBatches = [...batches].filter(b => b.status === 'pending');
@@ -1634,23 +1638,44 @@ class DevinOrchestrator {
             // Start new sessions if we have capacity
             while (this.activeSessions.size < this.maxParallelSessions &&
                 pendingBatches.length > 0) {
+                // Enforce delay between session starts to avoid rate limiting
+                const timeSinceLastStart = Date.now() - this.lastSessionStartTime;
+                if (this.lastSessionStartTime > 0 && timeSinceLastStart < SESSION_START_DELAY_MS) {
+                    const waitTime = SESSION_START_DELAY_MS - timeSinceLastStart;
+                    console.log(`[Orchestrator] Waiting ${waitTime}ms before starting next session (rate limit prevention)`);
+                    await this.sleep(waitTime);
+                }
                 console.log(`[Orchestrator] Starting new session: activeSessions=${this.activeSessions.size} < maxParallel=${this.maxParallelSessions}, pendingBatches=${pendingBatches.length}`);
                 const batch = pendingBatches.shift();
                 console.log(`[Orchestrator] Starting batch ${batch.id} (${batch.groupKey})`);
-                const session = await this.startSession(batch);
-                if (session) {
-                    this.activeSessions.set(batch.id, session);
+                const result = await this.startSessionWithRetry(batch);
+                if (result.rateLimited || result.sessionLimitHit) {
+                    // Re-queue the batch instead of failing
+                    pendingBatches.unshift(batch);
+                    console.log(`[Orchestrator] Re-queued batch ${batch.id} due to ${result.rateLimited ? 'rate limiting' : 'session limit'}`);
+                    this.rateLimitHits++;
+                    // If we've hit rate limits multiple times, reduce parallel sessions
+                    if (this.rateLimitHits >= 3 && this.maxParallelSessions > 1) {
+                        this.maxParallelSessions--;
+                        console.log(`[Orchestrator] Reduced maxParallelSessions to ${this.maxParallelSessions} due to repeated rate limits`);
+                    }
+                    // Break out of the inner loop to let existing sessions progress
+                    break;
+                }
+                else if (result.session) {
+                    this.activeSessions.set(batch.id, result.session);
                     this.pollRetries.set(batch.id, 0);
                     this.pollIntervals.set(batch.id, INITIAL_POLL_INTERVAL_MS);
                     this.batchStartTimes.set(batch.id, Date.now());
+                    this.lastSessionStartTime = Date.now();
                     batch.status = 'in_progress';
-                    batch.sessionId = session.sessionId;
-                    batch.sessionUrl = session.url;
+                    batch.sessionId = result.session.sessionId;
+                    batch.sessionUrl = result.session.url;
                     batch.startedAt = new Date().toISOString();
                     console.log(`[Orchestrator] Added batch ${batch.id} to activeSessions. Active count: ${this.activeSessions.size}`);
                 }
                 else {
-                    console.log(`[Orchestrator] Failed to start session for batch ${batch.id}`);
+                    console.log(`[Orchestrator] Failed to start session for batch ${batch.id}, will not re-queue`);
                 }
             }
             // Collect batch IDs to process (avoid modifying map while iterating)
@@ -1780,7 +1805,7 @@ class DevinOrchestrator {
         const match = prUrl.match(/\/pull\/(\d+)/);
         return match ? parseInt(match[1], 10) : null;
     }
-    async startSession(batch) {
+    async startSessionWithRetry(batch) {
         const prompt = this.buildPrompt(batch);
         try {
             const response = await fetch(`${DEVIN_API_BASE}/sessions`, {
@@ -1803,20 +1828,28 @@ class DevinOrchestrator {
                     throw new Error('Devin API authentication failed');
                 }
                 if (response.status === 429) {
-                    console.error(`Rate limit exceeded for Devin API. Waiting before retry...`);
-                    // Wait 60 seconds before allowing retry
-                    await this.sleep(60000);
-                    return null;
+                    console.warn(`Rate limited when starting batch ${batch.id}. Will re-queue.`);
+                    await this.sleep(RATE_LIMIT_WAIT_MS);
+                    return { session: null, rateLimited: true, sessionLimitHit: false };
+                }
+                // Check for concurrent session limit error
+                if (response.status === 400 || response.status === 403) {
+                    const lowerError = errorText.toLowerCase();
+                    if (lowerError.includes('concurrent session limit') || lowerError.includes('session limit')) {
+                        console.warn(`Concurrent session limit hit when starting batch ${batch.id}. Will re-queue.`);
+                        await this.sleep(RATE_LIMIT_WAIT_MS);
+                        return { session: null, rateLimited: false, sessionLimitHit: true };
+                    }
                 }
                 if (response.status === 403) {
                     console.error(`Access forbidden. Check API key permissions.`);
                     throw new Error('Devin API access forbidden');
                 }
                 console.error(`Failed to create session for batch ${batch.id}: ${response.status} - ${errorText}`);
-                return null;
+                return { session: null, rateLimited: false, sessionLimitHit: false };
             }
             const data = await response.json();
-            return {
+            const session = {
                 sessionId: data.session_id,
                 url: data.url,
                 status: 'working',
@@ -1825,14 +1858,19 @@ class DevinOrchestrator {
                 updatedAt: new Date().toISOString(),
                 messages: [],
             };
+            return { session, rateLimited: false, sessionLimitHit: false };
         }
         catch (error) {
             if (error instanceof Error && (error.message.includes('authentication') || error.message.includes('forbidden'))) {
                 throw error; // Re-throw auth errors to stop the orchestrator
             }
             console.error(`Error creating session for batch ${batch.id}:`, error);
-            return null;
+            return { session: null, rateLimited: false, sessionLimitHit: false };
         }
+    }
+    async startSession(batch) {
+        const result = await this.startSessionWithRetry(batch);
+        return result.session;
     }
     async pollSessionWithBackoff(sessionId, batchId) {
         const currentInterval = this.pollIntervals.get(batchId) || INITIAL_POLL_INTERVAL_MS;
@@ -2286,7 +2324,10 @@ async function run() {
             return controlState.paused;
         };
         const onProgress = async (batch, session) => {
-            core.info(`Batch ${batch.id} progress: ${session.structuredOutput?.progress || 0}%`);
+            const progress = session.structuredOutput?.progress || 0;
+            core.info(`Batch ${batch.id} progress: ${progress}%`);
+            // Update batch with session progress for dashboard
+            batch.sessionProgress = progress;
             const sessionIndex = remediationRun.sessions.findIndex(s => s.sessionId === session.sessionId);
             if (sessionIndex >= 0) {
                 remediationRun.sessions[sessionIndex] = session;

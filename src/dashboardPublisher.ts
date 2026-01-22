@@ -31,18 +31,24 @@ export class DashboardPublisher {
   }
 
   async publishRunData(run: RemediationRun, learningStore: LearningStore | null): Promise<string> {
-    const dashboardData: DashboardData = {
-      run,
-      learningStats: this.calculateLearningStats(learningStore),
-    };
+    try {
+      const dashboardData: DashboardData = {
+        run,
+        learningStats: this.calculateLearningStats(learningStore),
+      };
 
-    await this.writeFile(
-      DASHBOARD_DATA_PATH,
-      JSON.stringify(dashboardData, null, 2),
-      `Update remediation run data: ${run.id}`
-    );
+      await this.writeFile(
+        DASHBOARD_DATA_PATH,
+        JSON.stringify(dashboardData, null, 2),
+        `Update remediation run data: ${run.id}`
+      );
 
-    return this.getDashboardUrl();
+      console.log(`Successfully published dashboard data for run ${run.id}`);
+      return this.getDashboardUrl();
+    } catch (error) {
+      console.error(`Failed to publish dashboard data for run ${run.id}:`, error);
+      throw error;
+    }
   }
 
   async updateBatchStatus(runId: string, batch: AlertBatch): Promise<void> {
@@ -316,8 +322,8 @@ export class DashboardPublisher {
       useEffect(() => {
         const fetchData = async () => {
           try {
-            // Add cache-busting timestamp to prevent stale data from GitHub Pages caching
-            const cacheBuster = \`?t=\${Date.now()}\`;
+            // Add cache-busting timestamp and random component to prevent stale data from GitHub Pages caching
+            const cacheBuster = \`?t=\${Date.now()}&r=\${Math.random().toString(36).substr(2, 9)}\`;
             const [runResponse, controlResponse] = await Promise.all([
               fetch(\`data/remediation-data.json\${cacheBuster}\`),
               fetch(\`data/control-state.json\${cacheBuster}\`).catch(() => ({ ok: false }))
@@ -417,55 +423,29 @@ export class DashboardPublisher {
     }
 
     function ControlPanel({ run, controlState }) {
-      const [showControlInfo, setShowControlInfo] = useState(false);
-      
-      const handlePauseClick = () => {
-        setShowControlInfo(true);
-      };
-
-      const handleResumeClick = () => {
-        setShowControlInfo(true);
-      };
-
       if (run.status === 'completed' || run.status === 'failed') {
         return null;
       }
+
+      const workflowUrl = \`https://github.com/\${run.repository}/actions\`;
 
       return (
         <div className="mb-6 bg-gray-800 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Controls</h2>
-            <div className="flex gap-3">
-              {!controlState?.paused ? (
-                <button
-                  onClick={handlePauseClick}
-                  className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg font-medium transition-colors"
-                >
-                  Pause
-                </button>
-              ) : (
-                <button
-                  onClick={handleResumeClick}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium transition-colors"
-                >
-                  Resume
-                </button>
-              )}
+            <div className="flex gap-3 items-center">
+              <span className={\`px-3 py-1 rounded-full text-sm \${controlState?.paused ? 'bg-yellow-600' : 'bg-gray-600'}\`}>
+                {controlState?.paused ? 'Paused' : 'Running'}
+              </span>
+              <a 
+                href={workflowUrl} 
+                target="_blank" 
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors text-sm"
+              >
+                Manage via Actions
+              </a>
             </div>
           </div>
-          {showControlInfo && (
-            <div className="mt-3 p-3 bg-gray-700 rounded-lg text-sm">
-              <p className="text-yellow-400 font-medium mb-2">Manual Control Required</p>
-              <p className="text-gray-300">
-                To pause/resume the remediation run, please contact your repository admin or 
-                trigger a workflow dispatch event with the appropriate control action.
-              </p>
-              <p className="text-gray-400 mt-2">
-                Alternatively, you can manually update the control state file at: 
-                <code className="ml-1 bg-gray-600 px-1 rounded">data/control-state.json</code>
-              </p>
-            </div>
-          )}
         </div>
       );
     }
@@ -479,12 +459,13 @@ export class DashboardPublisher {
       
       // Estimate based on average time per batch (assume ~15 min per batch if no data)
       const AVG_MINUTES_PER_BATCH = 15;
-      const estimatedMinutesRemaining = (pendingBatches + inProgressBatches * 0.5) * AVG_MINUTES_PER_BATCH;
       
       // Calculate actual average if we have completed batches with timing data
       let actualAvgMinutes = AVG_MINUTES_PER_BATCH;
+      let timeSource = 'estimated';
       const completedWithTiming = run.batches.filter(b => b.startedAt && b.completedAt);
-      if (completedWithTiming.length > 0) {
+      if (completedWithTiming.length >= 2) {
+        timeSource = \`based on \${completedWithTiming.length} completed\`;
         const totalMinutes = completedWithTiming.reduce((sum, b) => {
           const start = new Date(b.startedAt).getTime();
           const end = new Date(b.completedAt).getTime();
@@ -534,6 +515,7 @@ export class DashboardPublisher {
             <div>
               <p className="text-gray-400">Est. Time Left</p>
               <p className="text-xl font-bold text-yellow-400">{formatTime(refinedEstimate)}</p>
+              <p className="text-xs text-gray-500">{timeSource}</p>
             </div>
           </div>
         </div>
@@ -734,20 +716,33 @@ export class DashboardPublisher {
               <h4 className="text-sm font-medium text-gray-400 mb-2">Alerts in this batch:</h4>
               <div className="space-y-2">
                 {batch.alerts.map((alert, idx) => (
-                  <div key={idx} className="bg-gray-700 rounded p-3 text-sm">
+                  <div key={alert.number || idx} className="bg-gray-700 rounded p-3 text-sm">
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">{alert.rule?.name || alert.rule_id || 'Unknown Rule'}</span>
+                      <span className="font-medium">#{alert.number}: {alert.rule?.name || 'Unknown Rule'}</span>
                       <span className={\`px-2 py-0.5 rounded text-xs \${
-                        alert.rule?.security_severity_level === 'critical' ? 'bg-red-600' :
-                        alert.rule?.security_severity_level === 'high' ? 'bg-orange-500' :
-                        alert.rule?.security_severity_level === 'medium' ? 'bg-yellow-500' : 'bg-blue-400'
+                        alert.rule?.severity === 'critical' ? 'bg-red-600' :
+                        alert.rule?.severity === 'high' ? 'bg-orange-500' :
+                        alert.rule?.severity === 'medium' ? 'bg-yellow-500' : 'bg-blue-400'
                       }\`}>
-                        {alert.rule?.security_severity_level || 'unknown'}
+                        {alert.rule?.severity || 'unknown'}
                       </span>
                     </div>
-                    <p className="text-gray-400 mt-1">{alert.most_recent_instance?.location?.path || 'Unknown file'}:{alert.most_recent_instance?.location?.start_line || '?'}</p>
-                    {alert.rule?.description && (
-                      <p className="text-gray-500 mt-1 text-xs">{alert.rule.description.substring(0, 150)}...</p>
+                    <p className="text-gray-400 mt-1">
+                      {alert.most_recent_instance?.location?.path || 'Unknown file'}
+                      <span className="ml-2">Line {alert.most_recent_instance?.location?.start_line || '?'}</span>
+                    </p>
+                    {alert.cwe && alert.cwe.length > 0 && (
+                      <p className="text-blue-400 mt-1 text-xs">
+                        {alert.cwe.join(', ')}
+                      </p>
+                    )}
+                    <p className="text-gray-500 mt-1 text-xs">
+                      {alert.most_recent_instance?.message?.text || alert.rule?.description || 'No description'}
+                    </p>
+                    {alert.html_url && (
+                      <a href={alert.html_url} target="_blank" className="text-blue-400 hover:underline text-xs mt-1 block" onClick={(e) => e.stopPropagation()}>
+                        View on GitHub
+                      </a>
                     )}
                   </div>
                 ))}
