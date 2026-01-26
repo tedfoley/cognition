@@ -1447,7 +1447,74 @@
         "url": "https://app.devin.ai/sessions/devin-220f86d8c7c94764a25dbec793149ffd",
         "status": "working",
         "batchId": "b77fc696-68d8-44a0-8120-2b1fe34b2c37",
-        "structuredOutput": null,
+        "structuredOutput": {
+          "fixes": [
+            {
+              "status": "pending",
+              "filePath": "src/routes/admin.js",
+              "fixedCode": "",
+              "alertNumber": 12,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/users.js",
+              "fixedCode": "",
+              "alertNumber": 11,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/admin.js",
+              "fixedCode": "",
+              "alertNumber": 10,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/users.js",
+              "fixedCode": "",
+              "alertNumber": 9,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/admin.js",
+              "fixedCode": "",
+              "alertNumber": 8,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            }
+          ],
+          "prUrl": null,
+          "progress": 0,
+          "checklist": {
+            "testsRun": false,
+            "prCreated": false,
+            "alertsFixed": 0,
+            "testsPassed": false,
+            "branchCreated": false,
+            "alertsAnalyzed": 0,
+            "repositoryCloned": false
+          },
+          "currentTask": "Clone repository and create branch for fixing CodeQL vulnerabilities",
+          "confidenceScore": null,
+          "confidenceExplanation": ""
+        },
         "createdAt": "2026-01-26T19:11:09.019363Z",
         "updatedAt": "2026-01-26T19:11:39.084377Z",
         "messages": [
