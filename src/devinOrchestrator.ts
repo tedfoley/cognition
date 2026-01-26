@@ -143,6 +143,9 @@ export class DevinOrchestrator {
           batch.sessionUrl = result.session.url;
           batch.startedAt = new Date().toISOString();
           console.log(`[Orchestrator] Added batch ${batch.id} to activeSessions. Active count: ${this.activeSessions.size}`);
+          
+          // Publish immediately so dashboard shows "in progress" status
+          await onProgress(batch, result.session);
         } else {
           console.log(`[Orchestrator] Failed to start session for batch ${batch.id}, will not re-queue`);
         }
