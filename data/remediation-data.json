@@ -1220,7 +1220,10 @@
         "groupKey": "high-CWE-307-part3",
         "severity": "high",
         "priority": 84,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "devin-08e1b1c610464f859afe44aaba44e235",
+        "sessionUrl": "https://app.devin.ai/sessions/08e1b1c610464f859afe44aaba44e235",
+        "startedAt": "2026-01-26T02:47:34.227Z"
       },
       {
         "id": "585023b6-60f0-4b3d-8cc7-bf596ddf23b1",
