@@ -1117,7 +1117,7 @@
         "sessionId": "devin-17996bd8e69d4029ab2db5681789025d",
         "sessionUrl": "https://app.devin.ai/sessions/17996bd8e69d4029ab2db5681789025d",
         "startedAt": "2026-01-26T20:32:23.648Z",
-        "sessionProgress": 0
+        "sessionProgress": 33
       },
       {
         "id": "2447c3a2-88a3-4046-a14c-adf5ce6d87a4",
@@ -1737,7 +1737,7 @@
             }
           ],
           "prUrl": null,
-          "progress": 0,
+          "progress": 33,
           "checklist": {
             "testsRun": false,
             "prCreated": false,
@@ -1747,7 +1747,7 @@
             "alertsAnalyzed": 0,
             "repositoryCloned": true
           },
-          "currentTask": "Analyze SQL injection vulnerabilities in src/routes/users.js",
+          "currentTask": "Analyze SQL injection vulnerabilities in src/routes/users.js (lines 32, 48, 64)",
           "confidenceScore": null,
           "confidenceExplanation": ""
         },
