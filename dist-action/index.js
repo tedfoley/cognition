@@ -1046,6 +1046,7 @@ class DashboardPublisher {
       useEffect(() => {
         const fetchData = async () => {
           try {
+            console.log('Fetching dashboard data...', new Date().toISOString());
             // Add cache-busting timestamp and random component to prevent stale data from GitHub Pages caching
             const cacheBuster = \`?t=\${Date.now()}&r=\${Math.random().toString(36).substr(2, 9)}\`;
             const [runResponse, controlResponse] = await Promise.all([
@@ -1103,8 +1104,7 @@ class DashboardPublisher {
           <ControlPanel run={run} controlState={controlState} />
           <ProgressOverview run={run} />
           <SecurityPosture run={run} />
-          <BatchProgress batches={run.batches} />
-          <SessionList sessions={run.sessions} batches={run.batches} />
+          <BatchProgress batches={run.batches} sessions={run.sessions} />
           <LearningStats stats={learningStats} />
         </div>
       );
@@ -1158,15 +1158,19 @@ class DashboardPublisher {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Controls</h2>
             <div className="flex gap-3 items-center">
-              <span className={\`px-3 py-1 rounded-full text-sm \${controlState?.paused ? 'bg-yellow-600' : 'bg-gray-600'}\`}>
-                {controlState?.paused ? 'Paused' : 'Running'}
-              </span>
               <a 
                 href={workflowUrl} 
                 target="_blank" 
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors text-sm"
               >
                 Manage via Actions
+              </a>
+              <a 
+                href={\`https://github.com/\${run.repository}/security/code-scanning\`} 
+                target="_blank" 
+                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg font-medium transition-colors text-sm"
+              >
+                View CodeQL Alerts
               </a>
             </div>
           </div>
@@ -1181,14 +1185,15 @@ class DashboardPublisher {
       const pendingBatches = run.batches.filter(b => b.status === 'pending').length;
       const totalBatches = run.batches.length;
       
-      // Estimate based on average time per batch (assume ~15 min per batch if no data)
-      const AVG_MINUTES_PER_BATCH = 15;
+      // Estimate based on average time per batch (reduced from 15 to 10 based on actual runs)
+      const AVG_MINUTES_PER_BATCH = 10;
       
       // Calculate actual average if we have completed batches with timing data
+      // Use actual data after just 1 batch completes (was 2)
       let actualAvgMinutes = AVG_MINUTES_PER_BATCH;
       let timeSource = 'estimated';
       const completedWithTiming = run.batches.filter(b => b.startedAt && b.completedAt);
-      if (completedWithTiming.length >= 2) {
+      if (completedWithTiming.length >= 1) {
         timeSource = \`based on \${completedWithTiming.length} completed\`;
         const totalMinutes = completedWithTiming.reduce((sum, b) => {
           const start = new Date(b.startedAt).getTime();
@@ -1200,6 +1205,10 @@ class DashboardPublisher {
       
       const refinedEstimate = (pendingBatches + inProgressBatches * 0.5) * actualAvgMinutes;
       const progressPercent = totalBatches > 0 ? (completedBatches / totalBatches) * 100 : 0;
+
+      // Calculate elapsed time
+      const runStartTime = run.startedAt ? new Date(run.startedAt).getTime() : Date.now();
+      const elapsedMinutes = (Date.now() - runStartTime) / 60000;
 
       const formatTime = (minutes) => {
         if (minutes < 1) return 'Less than a minute';
@@ -1223,7 +1232,7 @@ class DashboardPublisher {
             ></div>
           </div>
           
-          <div className="grid grid-cols-4 gap-4 text-center text-sm">
+          <div className="grid grid-cols-5 gap-4 text-center text-sm">
             <div>
               <p className="text-gray-400">Completed</p>
               <p className="text-xl font-bold text-green-400">{completedBatches}</p>
@@ -1235,6 +1244,10 @@ class DashboardPublisher {
             <div>
               <p className="text-gray-400">Pending</p>
               <p className="text-xl font-bold text-gray-400">{pendingBatches}</p>
+            </div>
+            <div>
+              <p className="text-gray-400">Elapsed</p>
+              <p className="text-xl font-bold text-gray-300">{formatTime(elapsedMinutes)}</p>
             </div>
             <div>
               <p className="text-gray-400">Est. Time Left</p>
@@ -1338,30 +1351,40 @@ class DashboardPublisher {
       );
     }
 
-    function BatchProgress({ batches }) {
+    function BatchProgress({ batches, sessions }) {
       return (
         <div className="mb-8">
           <h2 className="text-xl font-bold mb-4">Batch Progress</h2>
           <div className="space-y-3">
             {batches.map((batch) => (
-              <BatchCard key={batch.id} batch={batch} />
+              <BatchCard key={batch.id} batch={batch} sessions={sessions} />
             ))}
           </div>
         </div>
       );
     }
 
-    function BatchCard({ batch }) {
+    function BatchCard({ batch, sessions }) {
       const [expanded, setExpanded] = useState(false);
+      
+      // Find the session for this batch
+      const session = sessions?.find(s => s.sessionId === batch.sessionId);
+      
       const statusColors = {
         pending: 'bg-gray-600',
         in_progress: 'bg-blue-500 animate-pulse',
         completed: 'bg-green-500',
         failed: 'bg-red-500',
+        blocked: 'bg-yellow-500 animate-pulse',
       };
 
+      // Use session status if available and batch is in progress
+      const displayStatus = batch.status === 'in_progress' && session?.status === 'blocked' 
+        ? 'blocked' 
+        : batch.status;
+
       // Get progress from session structured output if available
-      const progress = batch.sessionProgress || 0;
+      const progress = batch.sessionProgress || session?.structuredOutput?.progress || 0;
 
       // Format timestamp
       const formatTime = (isoString) => {
@@ -1377,7 +1400,7 @@ class DashboardPublisher {
             onClick={() => setExpanded(!expanded)}
           >
             <div className="flex items-center gap-3">
-              <div className={\`w-3 h-3 rounded-full \${statusColors[batch.status]}\`}></div>
+              <div className={\`w-3 h-3 rounded-full \${statusColors[displayStatus] || statusColors[batch.status]}\`}></div>
               <div>
                 <span className="font-medium">{batch.groupKey}</span>
                 <span className="text-gray-400 ml-2">({batch.alerts.length} alerts)</span>
@@ -1434,105 +1457,74 @@ class DashboardPublisher {
             </div>
           </div>
           
-          {/* Expanded alerts section */}
-          {expanded && batch.alerts && batch.alerts.length > 0 && (
+          {/* Expanded section - now includes BOTH session info AND alerts */}
+          {expanded && (
             <div className="mt-4 pl-6 border-l-2 border-gray-700">
-              <h4 className="text-sm font-medium text-gray-400 mb-2">Alerts in this batch:</h4>
-              <div className="space-y-2">
-                {batch.alerts.map((alert, idx) => (
-                  <div key={alert.number || idx} className="bg-gray-700 rounded p-3 text-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">#{alert.number}: {alert.rule?.name || 'Unknown Rule'}</span>
-                      <span className={\`px-2 py-0.5 rounded text-xs \${
-                        alert.rule?.severity === 'critical' ? 'bg-red-600' :
-                        alert.rule?.severity === 'high' ? 'bg-orange-500' :
-                        alert.rule?.severity === 'medium' ? 'bg-yellow-500' : 'bg-blue-400'
-                      }\`}>
-                        {alert.rule?.severity || 'unknown'}
-                      </span>
-                    </div>
-                    <p className="text-gray-400 mt-1">
-                      {alert.most_recent_instance?.location?.path || 'Unknown file'}
-                      <span className="ml-2">Line {alert.most_recent_instance?.location?.start_line || '?'}</span>
-                    </p>
-                    {alert.cwe && alert.cwe.length > 0 && (
-                      <p className="text-blue-400 mt-1 text-xs">
-                        {alert.cwe.join(', ')}
-                      </p>
-                    )}
-                    <p className="text-gray-500 mt-1 text-xs">
-                      {alert.most_recent_instance?.message?.text || alert.rule?.description || 'No description'}
-                    </p>
-                    {alert.html_url && (
-                      <a href={alert.html_url} target="_blank" className="text-blue-400 hover:underline text-xs mt-1 block" onClick={(e) => e.stopPropagation()}>
-                        View on GitHub
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    function SessionList({ sessions, batches }) {
-      if (!sessions || sessions.length === 0) return null;
-
-      // Create a map of sessionId to batch for quick lookup
-      const sessionToBatch = {};
-      if (batches) {
-        batches.forEach(batch => {
-          if (batch.sessionId) {
-            sessionToBatch[batch.sessionId] = batch;
-          }
-        });
-      }
-
-      return (
-        <div className="mb-8">
-          <h2 className="text-xl font-bold mb-4">Active Sessions</h2>
-          <div className="grid grid-cols-2 gap-4">
-            {sessions.map((session) => {
-              const batch = sessionToBatch[session.sessionId];
-              const displayName = batch ? batch.groupKey : \`Session \${session.sessionId.slice(0, 8)}...\`;
-              
-              return (
-                <div key={session.sessionId} className="bg-gray-800 rounded-lg p-4">
+              {/* Session info (if active) */}
+              {session && batch.status === 'in_progress' && (
+                <div className="mb-4 p-3 bg-gray-700 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium">{displayName}</span>
+                    <span className="text-sm font-medium text-blue-400">Active Session</span>
                     <span className={\`px-2 py-1 rounded text-xs \${
                       session.status === 'working' ? 'bg-blue-500' :
-                      session.status === 'finished' ? 'bg-green-500' :
                       session.status === 'blocked' ? 'bg-yellow-500' :
-                      session.status === 'expired' ? 'bg-red-500' : 'bg-gray-500'
+                      session.status === 'finished' ? 'bg-green-500' : 'bg-gray-500'
                     }\`}>
                       {session.status}
                     </span>
                   </div>
                   {session.structuredOutput && (
                     <div className="text-sm text-gray-400">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span>Progress:</span>
-                        <div className="flex-1 bg-gray-700 rounded-full h-2">
-                          <div 
-                            className="bg-blue-400 h-2 rounded-full transition-all duration-300"
-                            style={{ width: \`\${session.structuredOutput.progress || 0}%\` }}
-                          ></div>
-                        </div>
-                        <span>{session.structuredOutput.progress || 0}%</span>
-                      </div>
-                      <p>Current: {session.structuredOutput.currentTask || 'N/A'}</p>
+                      <p>Current: {session.structuredOutput.currentTask || 'Working...'}</p>
                     </div>
                   )}
                   <a href={session.url} target="_blank" className="text-blue-400 hover:underline text-sm mt-2 block">
                     Open in Devin
                   </a>
                 </div>
-              );
-            })}
-          </div>
+              )}
+              
+              {/* Alerts list */}
+              {batch.alerts && batch.alerts.length > 0 && (
+                <>
+                  <h4 className="text-sm font-medium text-gray-400 mb-2">Alerts in this batch:</h4>
+                  <div className="space-y-2">
+                    {batch.alerts.map((alert, idx) => (
+                      <div key={alert.number || idx} className="bg-gray-700 rounded p-3 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">#{alert.number}: {alert.rule?.name || 'Unknown Rule'}</span>
+                          <span className={\`px-2 py-0.5 rounded text-xs \${
+                            alert.rule?.severity === 'critical' ? 'bg-red-600' :
+                            alert.rule?.severity === 'high' ? 'bg-orange-500' :
+                            alert.rule?.severity === 'medium' ? 'bg-yellow-500' : 'bg-blue-400'
+                          }\`}>
+                            {alert.rule?.severity || 'unknown'}
+                          </span>
+                        </div>
+                        <p className="text-gray-400 mt-1">
+                          {alert.most_recent_instance?.location?.path || 'Unknown file'}
+                          <span className="ml-2">Line {alert.most_recent_instance?.location?.start_line || '?'}</span>
+                        </p>
+                        {alert.cwe && alert.cwe.length > 0 && (
+                          <p className="text-blue-400 mt-1 text-xs">
+                            {alert.cwe.join(', ')}
+                          </p>
+                        )}
+                        <p className="text-gray-500 mt-1 text-xs">
+                          {alert.most_recent_instance?.message?.text || alert.rule?.description || 'No description'}
+                        </p>
+                        {alert.html_url && (
+                          <a href={alert.html_url} target="_blank" className="text-blue-400 hover:underline text-xs mt-1 block" onClick={(e) => e.stopPropagation()}>
+                            View on GitHub
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
       );
     }
@@ -1674,6 +1666,8 @@ class DevinOrchestrator {
                     batch.sessionUrl = result.session.url;
                     batch.startedAt = new Date().toISOString();
                     console.log(`[Orchestrator] Added batch ${batch.id} to activeSessions. Active count: ${this.activeSessions.size}`);
+                    // Publish immediately so dashboard shows "in progress" status
+                    await onProgress(batch, result.session);
                 }
                 else {
                     console.log(`[Orchestrator] Failed to start session for batch ${batch.id}, will not re-queue`);
