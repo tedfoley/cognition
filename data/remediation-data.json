@@ -1687,8 +1687,9 @@
           "confidenceScore": 0.9,
           "confidenceExplanation": "The fixes are straightforward and follow established security patterns for path validation."
         },
+        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/16",
         "createdAt": "2026-01-26T02:44:07.053442Z",
-        "updatedAt": "2026-01-26T02:45:11.163216Z",
+        "updatedAt": "2026-01-26T02:47:18.266984Z",
         "messages": [
           {
             "timestamp": "2026-01-26T02:44:07.059555+00:00"
