@@ -1383,7 +1383,54 @@
         "url": "https://app.devin.ai/sessions/devin-ab1cb524f0b9408d9c6c1459d156ba46",
         "status": "working",
         "batchId": "0e5db8d2-b4ba-42c4-bab7-10511fd900d8",
-        "structuredOutput": null,
+        "structuredOutput": {
+          "fixes": [
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 26,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 25,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 24,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            }
+          ],
+          "prUrl": null,
+          "progress": 0,
+          "checklist": {
+            "testsRun": false,
+            "prCreated": false,
+            "alertsFixed": 0,
+            "testsPassed": false,
+            "branchCreated": false,
+            "alertsAnalyzed": 0,
+            "repositoryCloned": false
+          },
+          "currentTask": "Clone repository and create fix branch fix/codeql-critical-CWE-843-1769454637825",
+          "confidenceScore": null,
+          "confidenceExplanation": ""
+        },
         "createdAt": "2026-01-26T19:10:38.320795Z",
         "updatedAt": "2026-01-26T19:11:04.246088Z",
         "messages": [
