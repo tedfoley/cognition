@@ -1228,7 +1228,7 @@
         "sessionId": "devin-1158ca9c1f3845b9a38178da72d22c45",
         "sessionUrl": "https://app.devin.ai/sessions/1158ca9c1f3845b9a38178da72d22c45",
         "startedAt": "2026-01-26T20:45:36.778Z",
-        "sessionProgress": 0
+        "sessionProgress": 100
       },
       {
         "id": "fff9a58f-35c4-470f-8581-7d08cc2cd2cf",
@@ -1787,12 +1787,61 @@
       },
       {
         "sessionId": "devin-1158ca9c1f3845b9a38178da72d22c45",
-        "url": "https://app.devin.ai/sessions/1158ca9c1f3845b9a38178da72d22c45",
-        "status": "working",
+        "url": "https://app.devin.ai/sessions/devin-1158ca9c1f3845b9a38178da72d22c45",
+        "status": "blocked",
         "batchId": "2447c3a2-88a3-4046-a14c-adf5ce6d87a4",
-        "createdAt": "2026-01-26T20:45:36.778Z",
-        "updatedAt": "2026-01-26T20:45:36.778Z",
-        "messages": []
+        "structuredOutput": {
+          "fixes": [
+            {
+              "status": "completed",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "router.get('/download', fileAccessLimiter, (req, res) => {",
+              "alertNumber": 2,
+              "explanation": "Added rate limiting middleware to prevent brute-force attacks on file download endpoint",
+              "testsPassed": true,
+              "originalCode": "router.get('/download', (req, res) => {",
+              "confidenceScore": 0.95
+            },
+            {
+              "status": "completed",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "router.get('/read', fileAccessLimiter, (req, res) => {",
+              "alertNumber": 1,
+              "explanation": "Added rate limiting middleware to prevent brute-force attacks on file read endpoint",
+              "testsPassed": true,
+              "originalCode": "router.get('/read', (req, res) => {",
+              "confidenceScore": 0.95
+            }
+          ],
+          "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/36",
+          "progress": 100,
+          "checklist": {
+            "testsRun": true,
+            "prCreated": true,
+            "alertsFixed": 2,
+            "testsPassed": true,
+            "branchCreated": true,
+            "alertsAnalyzed": 2,
+            "repositoryCloned": true
+          },
+          "currentTask": "completed",
+          "confidenceScore": 0.95,
+          "confidenceExplanation": "Standard fix using well-established express-rate-limit package, CI passed including CodeQL analysis"
+        },
+        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/36",
+        "createdAt": "2026-01-26T20:45:36.503754Z",
+        "updatedAt": "2026-01-26T20:51:05.033948Z",
+        "messages": [
+          {
+            "timestamp": "2026-01-26T20:45:36.508809+00:00"
+          },
+          {
+            "timestamp": "2026-01-26T20:46:05.281426+00:00"
+          },
+          {
+            "timestamp": "2026-01-26T20:51:03.660602+00:00"
+          }
+        ]
       },
       {
         "sessionId": "devin-934c6d1732af4d7faeb2f16a9d79fbf6",
