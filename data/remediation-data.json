@@ -18,7 +18,7 @@
       "dryRun": false
     },
     "alertsTotal": 27,
-    "alertsProcessed": 8,
+    "alertsProcessed": 12,
     "batches": [
       {
         "id": "1317e9ca-bff3-40ea-b054-4268f72fdf0f",
@@ -200,11 +200,12 @@
         "groupKey": "critical-CWE-078",
         "severity": "critical",
         "priority": 108,
-        "status": "in_progress",
+        "status": "failed",
         "sessionId": "devin-d61286829adb4df28412ebf101ff9be5",
         "sessionUrl": "https://app.devin.ai/sessions/d61286829adb4df28412ebf101ff9be5",
         "startedAt": "2026-01-26T19:59:34.667Z",
-        "sessionProgress": 75
+        "sessionProgress": 75,
+        "completedAt": "2026-01-26T20:31:54.322Z"
       },
       {
         "id": "314cfb5d-75b0-41b8-bf48-855bc43f4480",
@@ -1586,8 +1587,8 @@
     }
   },
   "learningStats": {
-    "totalRecords": 23,
-    "overallSuccessRate": 1,
+    "totalRecords": 27,
+    "overallSuccessRate": 0.8518518518518519,
     "topCWEs": [
       {
         "cwe": "CWE-307",
@@ -1598,6 +1599,11 @@
         "cwe": "CWE-843",
         "count": 6,
         "successRate": 1
+      },
+      {
+        "cwe": "CWE-078",
+        "count": 4,
+        "successRate": 0
       },
       {
         "cwe": "CWE-089",
