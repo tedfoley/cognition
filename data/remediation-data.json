@@ -1279,7 +1279,10 @@
         "groupKey": "high-CWE-079",
         "severity": "high",
         "priority": 82,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "devin-cba6d86d760d4a89933e4a645e38dc42",
+        "sessionUrl": "https://app.devin.ai/sessions/cba6d86d760d4a89933e4a645e38dc42",
+        "startedAt": "2026-01-26T02:49:27.837Z"
       },
       {
         "id": "a0778fb2-7dad-44db-a10c-ff69b7339f9b",
@@ -1633,8 +1636,9 @@
           "confidenceScore": 0.9,
           "confidenceExplanation": "The fixes are straightforward and follow established security patterns."
         },
+        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/18",
         "createdAt": "2026-01-26T02:42:42.314629Z",
-        "updatedAt": "2026-01-26T02:45:07.618709Z",
+        "updatedAt": "2026-01-26T02:49:18.062971Z",
         "messages": [
           {
             "timestamp": "2026-01-26T02:42:42.320173+00:00"
