@@ -1122,7 +1122,7 @@
         "sessionId": "devin-91807621ca02466fbfa24d4fc99f3b72",
         "sessionUrl": "https://app.devin.ai/sessions/91807621ca02466fbfa24d4fc99f3b72",
         "startedAt": "2026-01-26T02:46:10.350Z",
-        "sessionProgress": 20
+        "sessionProgress": 60
       },
       {
         "id": "3d05750e-62c8-4320-9a64-64f01455347f",
@@ -1716,48 +1716,48 @@
             {
               "status": "pending",
               "filePath": "src/routes/users.js",
-              "fixedCode": "",
+              "fixedCode": "const query = \"SELECT id, username, email FROM users WHERE username = ?\";",
               "alertNumber": 20,
-              "explanation": "",
+              "explanation": "Replaced string concatenation with a parameterized query to prevent SQL injection.",
               "testsPassed": null,
-              "originalCode": "",
-              "confidenceScore": null
+              "originalCode": "const query = \"SELECT id, username, email FROM users WHERE username = '\" + username + \"'\";",
+              "confidenceScore": 0.9
             },
             {
               "status": "pending",
               "filePath": "src/routes/users.js",
-              "fixedCode": "",
+              "fixedCode": "const query = \"SELECT id, username, email FROM users WHERE email = ?\";",
               "alertNumber": 19,
-              "explanation": "",
+              "explanation": "Replaced template literal with a parameterized query to prevent SQL injection.",
               "testsPassed": null,
-              "originalCode": "",
-              "confidenceScore": null
+              "originalCode": "const query = `SELECT id, username, email FROM users WHERE email = '${email}'`; ",
+              "confidenceScore": 0.9
             },
             {
               "status": "pending",
               "filePath": "src/routes/users.js",
-              "fixedCode": "",
+              "fixedCode": "const query = \"SELECT * FROM users WHERE username = ? AND password = ?\";",
               "alertNumber": 18,
-              "explanation": "",
+              "explanation": "Replaced string concatenation with a parameterized query to prevent SQL injection.",
               "testsPassed": null,
-              "originalCode": "",
-              "confidenceScore": null
+              "originalCode": "const query = \"SELECT * FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\";",
+              "confidenceScore": 0.9
             }
           ],
           "prUrl": null,
-          "progress": 20,
+          "progress": 60,
           "checklist": {
             "testsRun": false,
             "prCreated": false,
             "alertsFixed": 0,
-            "testsPassed": false,
+            "testsPassed": null,
             "branchCreated": true,
-            "alertsAnalyzed": 0,
+            "alertsAnalyzed": 3,
             "repositoryCloned": true
           },
-          "currentTask": "Analyze SQL injection vulnerabilities in src/routes/users.js (lines 32, 48, 64)",
-          "confidenceScore": null,
-          "confidenceExplanation": ""
+          "currentTask": "Fix all 3 SQL injection alerts using parameterized queries",
+          "confidenceScore": 0.9,
+          "confidenceExplanation": "The fixes are straightforward and follow established security patterns."
         },
         "createdAt": "2026-01-26T02:46:10.203915Z",
         "updatedAt": "2026-01-26T02:47:01.754319Z",
