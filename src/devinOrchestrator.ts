@@ -646,8 +646,63 @@ export class DevinOrchestrator {
   }
 
   /**
+   * Get the current head SHA of a PR.
+   * 
+   * @param prUrl - The URL of the pull request
+   * @returns The head SHA or null if unable to retrieve
+   */
+  private async getPRHeadSha(prUrl: string): Promise<string | null> {
+    try {
+      const prNumber = this.extractPRNumber(prUrl);
+      if (!prNumber) return null;
+
+      const [owner, repo] = this.repository.split('/');
+
+      const { data: pr } = await this.octokit.pulls.get({
+        owner,
+        repo,
+        pull_number: prNumber,
+      });
+
+      return pr.head.sha;
+    } catch (error) {
+      console.error(`[Orchestrator] Error getting PR head SHA:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Wait for a new commit to be pushed to the PR.
+   * Returns the new SHA if a commit is pushed, or null if timeout.
+   * 
+   * @param prUrl - The URL of the pull request
+   * @param lastKnownSha - The SHA to compare against
+   * @param timeoutMs - Maximum time to wait for a new commit (default: 5 minutes)
+   * @returns The new SHA if a commit is pushed, or null if timeout
+   */
+  private async waitForNewCommit(prUrl: string, lastKnownSha: string, timeoutMs: number = 300000): Promise<string | null> {
+    const startTime = Date.now();
+    const pollInterval = 15000; // Check every 15 seconds for new commits
+
+    while (Date.now() - startTime < timeoutMs) {
+      await this.sleep(pollInterval);
+
+      const currentSha = await this.getPRHeadSha(prUrl);
+
+      if (currentSha && currentSha !== lastKnownSha) {
+        return currentSha;
+      }
+
+      console.log(`[Orchestrator] Still waiting for new commit (current: ${currentSha?.slice(0, 7)})`);
+    }
+
+    return null;
+  }
+
+  /**
    * Wait for CI checks to pass on a PR, with retry attempts if CI fails.
-   * Sends messages to Devin asking it to fix CI failures.
+   * Sends messages to Devin asking it to fix CI failures and waits for
+   * Devin to push a new commit before re-polling CI status.
    * 
    * @param prUrl - The URL of the pull request
    * @param sessionId - The Devin session ID to message if CI fails
@@ -657,7 +712,10 @@ export class DevinOrchestrator {
     let ciAttempts = 0;
     const ciStartTime = Date.now();
 
-    console.log(`[Orchestrator] Starting CI check monitoring for ${prUrl}`);
+    // Track the current head SHA so we know when Devin pushes a fix
+    let lastKnownSha = await this.getPRHeadSha(prUrl);
+
+    console.log(`[Orchestrator] Starting CI check monitoring for ${prUrl}, head SHA: ${lastKnownSha}`);
 
     while (ciAttempts < MAX_CI_ATTEMPTS && Date.now() - ciStartTime < CI_TIMEOUT_MS) {
       await this.sleep(CI_POLL_INTERVAL_MS);
@@ -676,6 +734,19 @@ export class DevinOrchestrator {
             sessionId,
             'The CI checks failed on your PR. Please review the check failures and push fixes.'
           );
+
+          // Wait for Devin to push a new commit before re-checking CI
+          console.log(`[Orchestrator] Waiting for Devin to push a fix...`);
+          const newSha = await this.waitForNewCommit(prUrl, lastKnownSha || '');
+
+          if (newSha) {
+            console.log(`[Orchestrator] Devin pushed new commit: ${newSha}`);
+            lastKnownSha = newSha;
+            // Reset to let CI run on the new commit - don't immediately check status
+            // The next loop iteration will poll after CI_POLL_INTERVAL_MS
+          } else {
+            console.log(`[Orchestrator] Timeout waiting for Devin to push fix`);
+          }
         }
       }
       // If 'pending', keep polling
