@@ -1306,12 +1306,77 @@
     "sessions": [
       {
         "sessionId": "devin-74dec295f2d747e5bfd5fcb33b58e1de",
-        "url": "https://app.devin.ai/sessions/74dec295f2d747e5bfd5fcb33b58e1de",
+        "url": "https://app.devin.ai/sessions/devin-74dec295f2d747e5bfd5fcb33b58e1de",
         "status": "working",
         "batchId": "3fcd2821-6615-48f4-b928-c69b8505c908",
-        "createdAt": "2026-01-26T19:10:07.800Z",
-        "updatedAt": "2026-01-26T19:10:07.800Z",
-        "messages": []
+        "structuredOutput": {
+          "fixes": [
+            {
+              "status": "pending",
+              "filePath": "src/routes/admin.js",
+              "fixedCode": "",
+              "alertNumber": 16,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/admin.js",
+              "fixedCode": "",
+              "alertNumber": 15,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/admin.js",
+              "fixedCode": "",
+              "alertNumber": 14,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/admin.js",
+              "fixedCode": "",
+              "alertNumber": 13,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            }
+          ],
+          "prUrl": null,
+          "progress": 0,
+          "checklist": {
+            "testsRun": false,
+            "prCreated": false,
+            "alertsFixed": 0,
+            "testsPassed": false,
+            "branchCreated": true,
+            "alertsAnalyzed": 0,
+            "repositoryCloned": true
+          },
+          "currentTask": "Clone repository and create branch fix/codeql-critical-CWE-078-1769454607054",
+          "confidenceScore": null,
+          "confidenceExplanation": ""
+        },
+        "createdAt": "2026-01-26T19:10:07.615013Z",
+        "updatedAt": "2026-01-26T19:10:38.916595Z",
+        "messages": [
+          {
+            "timestamp": "2026-01-26T19:10:07.620001+00:00"
+          },
+          {
+            "timestamp": "2026-01-26T19:10:37.289437+00:00"
+          }
+        ]
       },
       {
         "sessionId": "devin-ab1cb524f0b9408d9c6c1459d156ba46",
