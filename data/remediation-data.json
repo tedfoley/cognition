@@ -3,7 +3,7 @@
     "id": "run-mkvlcojm-9hzme3",
     "repository": "tedfoley/vulnerable-demo-app",
     "startedAt": "2026-01-26T19:59:31.906Z",
-    "status": "running",
+    "status": "completed",
     "config": {
       "batchingStrategy": "severity-then-cwe",
       "maxBatchSize": 5,
@@ -1915,6 +1915,14 @@
         "medium": 1,
         "low": 0,
         "timestamp": "2026-01-26T19:59:31.906Z"
+      },
+      "after": {
+        "total": 27,
+        "critical": 7,
+        "high": 19,
+        "medium": 1,
+        "low": 0,
+        "timestamp": "2026-01-26T21:17:42.668Z"
       }
     },
     "controlState": {
@@ -1922,7 +1930,8 @@
       "rebatchRequested": false,
       "priorityOverrides": {},
       "skipBatches": []
-    }
+    },
+    "completedAt": "2026-01-26T21:17:42.668Z"
   },
   "learningStats": {
     "totalRecords": 41,
