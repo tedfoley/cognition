@@ -1388,51 +1388,52 @@
             {
               "status": "completed",
               "filePath": "src/routes/files.js",
-              "fixedCode": "if (!filename || typeof filename !== 'string' || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {",
+              "fixedCode": "let filename = req.query.filename;\nif (Array.isArray(filename)) {\n    return res.status(400).json({ error: 'Invalid filename parameter' });\n}\nif (typeof filename !== 'string') {\n    return res.status(400).json({ error: 'Invalid filename parameter' });\n}\nif (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {\n    return res.status(400).json({ error: 'Invalid filename' });\n}",
               "alertNumber": 26,
-              "explanation": "Ensured that filename is a string to prevent type confusion attacks (CWE-843). If filename is an array, it returns an error response.",
+              "explanation": "The fix ensures that the filename parameter is a string and rejects arrays to prevent type confusion attacks (CWE-843).",
               "testsPassed": null,
-              "originalCode": "if (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {",
+              "originalCode": "const filename = req.query.filename;\nif (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {\n    return res.status(400).json({ error: 'Invalid filename' });\n}",
               "confidenceScore": 0.9
             },
             {
               "status": "completed",
               "filePath": "src/routes/files.js",
-              "fixedCode": "if (!filename || typeof filename !== 'string' || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {",
+              "fixedCode": "let filename = req.query.filename;\nif (Array.isArray(filename)) {\n    return res.status(400).json({ error: 'Invalid filename parameter' });\n}\nif (typeof filename !== 'string') {\n    return res.status(400).json({ error: 'Invalid filename parameter' });\n}\nif (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {\n    return res.status(400).json({ error: 'Invalid filename' });\n}",
               "alertNumber": 25,
-              "explanation": "Ensured that filename is a string to prevent type confusion attacks (CWE-843). If filename is an array, it returns an error response.",
+              "explanation": "The fix ensures that the filename parameter is a string and rejects arrays to prevent type confusion attacks (CWE-843).",
               "testsPassed": null,
-              "originalCode": "if (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {",
+              "originalCode": "const filename = req.query.filename;\nif (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {\n    return res.status(400).json({ error: 'Invalid filename' });\n}",
               "confidenceScore": 0.9
             },
             {
               "status": "completed",
               "filePath": "src/routes/files.js",
-              "fixedCode": "if (!filename || typeof filename !== 'string' || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {",
+              "fixedCode": "let filename = req.query.filename;\nif (Array.isArray(filename)) {\n    return res.status(400).json({ error: 'Invalid filename parameter' });\n}\nif (typeof filename !== 'string') {\n    return res.status(400).json({ error: 'Invalid filename parameter' });\n}\nif (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {\n    return res.status(400).json({ error: 'Invalid filename' });\n}",
               "alertNumber": 24,
-              "explanation": "Ensured that filename is a string to prevent type confusion attacks (CWE-843). If filename is an array, it returns an error response.",
+              "explanation": "The fix ensures that the filename parameter is a string and rejects arrays to prevent type confusion attacks (CWE-843).",
               "testsPassed": null,
-              "originalCode": "if (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {",
+              "originalCode": "const filename = req.query.filename;\nif (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {\n    return res.status(400).json({ error: 'Invalid filename' });\n}",
               "confidenceScore": 0.9
             }
           ],
-          "prUrl": null,
+          "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/13",
           "progress": 100,
           "checklist": {
             "testsRun": false,
-            "prCreated": false,
+            "prCreated": true,
             "alertsFixed": 3,
             "testsPassed": null,
             "branchCreated": true,
             "alertsAnalyzed": 3,
             "repositoryCloned": true
           },
-          "currentTask": "Implementing fixes for CodeQL alerts",
+          "currentTask": "Create PR with security fix",
           "confidenceScore": 0.9,
-          "confidenceExplanation": "The fix is straightforward and follows security best practices."
+          "confidenceExplanation": "The fixes are straightforward and follow security best practices."
         },
+        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/13",
         "createdAt": "2026-01-26T02:37:11.908855Z",
-        "updatedAt": "2026-01-26T02:40:52.468673Z",
+        "updatedAt": "2026-01-26T02:42:14.427659Z",
         "messages": [
           {
             "timestamp": "2026-01-26T02:37:11.913919+00:00"
