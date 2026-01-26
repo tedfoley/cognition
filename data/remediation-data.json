@@ -1338,7 +1338,10 @@
         "groupKey": "medium-CWE-434",
         "severity": "medium",
         "priority": 62,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "devin-e2458fffd29245509c6269e28fb5dc58",
+        "sessionUrl": "https://app.devin.ai/sessions/e2458fffd29245509c6269e28fb5dc58",
+        "startedAt": "2026-01-26T02:51:09.421Z"
       }
     ],
     "sessions": [
