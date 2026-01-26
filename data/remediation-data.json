@@ -1312,13 +1312,23 @@
         "structuredOutput": {
           "fixes": [
             {
+              "status": "in_progress",
+              "filePath": "src/routes/admin.js",
+              "fixedCode": "execFile('ping', ['-c', '4', host], (error, stdout, stderr) => {",
+              "alertNumber": 13,
+              "explanation": "Changed exec to execFile to prevent command injection by avoiding shell interpretation.",
+              "testsPassed": null,
+              "originalCode": "exec('ping -c 4 ' + host, (error, stdout, stderr) => {",
+              "confidenceScore": 0.9
+            },
+            {
               "status": "pending",
               "filePath": "src/routes/admin.js",
               "fixedCode": "",
-              "alertNumber": 16,
-              "explanation": "",
+              "alertNumber": 14,
+              "explanation": "To be fixed by validating filename and using execFile.",
               "testsPassed": null,
-              "originalCode": "",
+              "originalCode": "exec(`tar -czf /tmp/${filename}.tar.gz /var/log`, (error, stdout, stderr) => {",
               "confidenceScore": null
             },
             {
@@ -1326,29 +1336,19 @@
               "filePath": "src/routes/admin.js",
               "fixedCode": "",
               "alertNumber": 15,
-              "explanation": "",
+              "explanation": "To be fixed by validating domain and using execFile.",
               "testsPassed": null,
-              "originalCode": "",
+              "originalCode": "const command = 'nslookup ' + domain;",
               "confidenceScore": null
             },
             {
               "status": "pending",
               "filePath": "src/routes/admin.js",
               "fixedCode": "",
-              "alertNumber": 14,
-              "explanation": "",
+              "alertNumber": 16,
+              "explanation": "To be fixed by validating input and using execFile.",
               "testsPassed": null,
-              "originalCode": "",
-              "confidenceScore": null
-            },
-            {
-              "status": "pending",
-              "filePath": "src/routes/admin.js",
-              "fixedCode": "",
-              "alertNumber": 13,
-              "explanation": "",
-              "testsPassed": null,
-              "originalCode": "",
+              "originalCode": "exec(`ping -c 4 ${host}`, (error, stdout, stderr) => {",
               "confidenceScore": null
             }
           ],
@@ -1358,14 +1358,14 @@
             "testsRun": false,
             "prCreated": false,
             "alertsFixed": 0,
-            "testsPassed": false,
+            "testsPassed": null,
             "branchCreated": true,
-            "alertsAnalyzed": 0,
+            "alertsAnalyzed": 4,
             "repositoryCloned": true
           },
-          "currentTask": "Analyze all 4 command injection vulnerabilities in src/routes/admin.js",
-          "confidenceScore": null,
-          "confidenceExplanation": ""
+          "currentTask": "Analyzing and fixing CodeQL security vulnerabilities",
+          "confidenceScore": 0.9,
+          "confidenceExplanation": "High confidence in the fix for Alert #13 due to clear understanding of the command injection issue."
         },
         "createdAt": "2026-01-26T16:43:26.168712Z",
         "updatedAt": "2026-01-26T16:44:20.202660Z",
