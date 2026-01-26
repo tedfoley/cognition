@@ -2097,33 +2097,6 @@ class DevinOrchestrator {
         }
     }
     /**
-     * Send a message to a Devin session asking it to fix CI failures.
-     *
-     * @param sessionId - The Devin session ID
-     * @param message - The message to send
-     */
-    async sendMessageToSession(sessionId, message) {
-        try {
-            const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}/messages`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${this.apiKey}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message }),
-            });
-            if (!response.ok) {
-                console.error(`[Orchestrator] Failed to send message to session ${sessionId}: ${response.status}`);
-            }
-            else {
-                console.log(`[Orchestrator] Sent message to session ${sessionId}`);
-            }
-        }
-        catch (error) {
-            console.error(`[Orchestrator] Error sending message to session ${sessionId}:`, error);
-        }
-    }
-    /**
      * Wait for CI checks to pass on a PR, with retry attempts if CI fails.
      * Sends messages to Devin asking it to fix CI failures.
      *
@@ -2146,7 +2119,7 @@ class DevinOrchestrator {
                 ciAttempts++;
                 console.log(`[Orchestrator] CI failed for ${prUrl}, asking Devin to fix (attempt ${ciAttempts}/${MAX_CI_ATTEMPTS})`);
                 if (ciAttempts < MAX_CI_ATTEMPTS) {
-                    await this.sendMessageToSession(sessionId, 'The CI checks failed on your PR. Please review the check failures and push fixes.');
+                    await this.sendMessage(sessionId, 'The CI checks failed on your PR. Please review the check failures and push fixes.');
                 }
             }
             // If 'pending', keep polling
