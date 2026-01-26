@@ -1287,7 +1287,7 @@
         "sessionId": "devin-934c6d1732af4d7faeb2f16a9d79fbf6",
         "sessionUrl": "https://app.devin.ai/sessions/934c6d1732af4d7faeb2f16a9d79fbf6",
         "startedAt": "2026-01-26T20:46:07.328Z",
-        "sessionProgress": 0
+        "sessionProgress": 100
       },
       {
         "id": "0462533f-5bee-444d-b9b3-5510fae9cb9a",
@@ -1848,12 +1848,51 @@
       },
       {
         "sessionId": "devin-934c6d1732af4d7faeb2f16a9d79fbf6",
-        "url": "https://app.devin.ai/sessions/934c6d1732af4d7faeb2f16a9d79fbf6",
-        "status": "working",
+        "url": "https://app.devin.ai/sessions/devin-934c6d1732af4d7faeb2f16a9d79fbf6",
+        "status": "blocked",
         "batchId": "fff9a58f-35c4-470f-8581-7d08cc2cd2cf",
-        "createdAt": "2026-01-26T20:46:07.328Z",
-        "updatedAt": "2026-01-26T20:46:07.328Z",
-        "messages": []
+        "structuredOutput": {
+          "fixes": [
+            {
+              "status": "completed",
+              "filePath": "src/index.js",
+              "fixedCode": "const { safeRenderUserProfile, generateSessionToken } = require('./utils/helpers');\nconst html = safeRenderUserProfile(username);",
+              "alertNumber": 17,
+              "explanation": "Replaced vulnerable renderUserProfile with safeRenderUserProfile which uses escapeHtml() to encode HTML special characters before embedding user input.",
+              "testsPassed": true,
+              "originalCode": "const { renderUserProfile, generateSessionToken } = require('./utils/helpers');\nconst html = renderUserProfile(username);",
+              "confidenceScore": 0.95
+            }
+          ],
+          "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/35",
+          "progress": 100,
+          "checklist": {
+            "testsRun": true,
+            "prCreated": true,
+            "alertsFixed": 1,
+            "testsPassed": true,
+            "branchCreated": true,
+            "alertsAnalyzed": 1,
+            "repositoryCloned": true
+          },
+          "currentTask": "completed",
+          "confidenceScore": 0.95,
+          "confidenceExplanation": "High confidence - used existing safe function that properly escapes HTML entities. Standard XSS remediation pattern."
+        },
+        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/35",
+        "createdAt": "2026-01-26T20:46:07.180107Z",
+        "updatedAt": "2026-01-26T20:50:07.967008Z",
+        "messages": [
+          {
+            "timestamp": "2026-01-26T20:46:07.186729+00:00"
+          },
+          {
+            "timestamp": "2026-01-26T20:46:48.849235+00:00"
+          },
+          {
+            "timestamp": "2026-01-26T20:50:06.292478+00:00"
+          }
+        ]
       }
     ],
     "prsCreated": [
