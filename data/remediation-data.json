@@ -1,8 +1,8 @@
 {
   "run": {
-    "id": "run-mkvjl3fe-2j5mro",
+    "id": "run-mkvlcojm-9hzme3",
     "repository": "tedfoley/vulnerable-demo-app",
-    "startedAt": "2026-01-26T19:10:05.210Z",
+    "startedAt": "2026-01-26T19:59:31.906Z",
     "status": "running",
     "config": {
       "batchingStrategy": "severity-then-cwe",
@@ -18,10 +18,10 @@
       "dryRun": false
     },
     "alertsTotal": 27,
-    "alertsProcessed": 15,
+    "alertsProcessed": 0,
     "batches": [
       {
-        "id": "3fcd2821-6615-48f4-b928-c69b8505c908",
+        "id": "1317e9ca-bff3-40ea-b054-4268f72fdf0f",
         "alerts": [
           {
             "number": 16,
@@ -200,17 +200,10 @@
         "groupKey": "critical-CWE-078",
         "severity": "critical",
         "priority": 108,
-        "status": "completed",
-        "sessionId": "devin-74dec295f2d747e5bfd5fcb33b58e1de",
-        "sessionUrl": "https://app.devin.ai/sessions/74dec295f2d747e5bfd5fcb33b58e1de",
-        "startedAt": "2026-01-26T19:10:07.800Z",
-        "sessionProgress": 100,
-        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/23",
-        "completedAt": "2026-01-26T19:35:31.864Z",
-        "confidenceScore": 0.4600000000000001
+        "status": "pending"
       },
       {
-        "id": "0e5db8d2-b4ba-42c4-bab7-10511fd900d8",
+        "id": "314cfb5d-75b0-41b8-bf48-855bc43f4480",
         "alerts": [
           {
             "number": 26,
@@ -337,17 +330,10 @@
         "groupKey": "critical-CWE-843",
         "severity": "critical",
         "priority": 106,
-        "status": "completed",
-        "sessionId": "devin-ab1cb524f0b9408d9c6c1459d156ba46",
-        "sessionUrl": "https://app.devin.ai/sessions/ab1cb524f0b9408d9c6c1459d156ba46",
-        "startedAt": "2026-01-26T19:10:38.490Z",
-        "sessionProgress": 100,
-        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/22",
-        "completedAt": "2026-01-26T19:23:24.149Z",
-        "confidenceScore": 0.9
+        "status": "pending"
       },
       {
-        "id": "b77fc696-68d8-44a0-8120-2b1fe34b2c37",
+        "id": "2a5a31af-cc18-44be-997e-0dc5023f6bd2",
         "alerts": [
           {
             "number": 12,
@@ -574,17 +560,10 @@
         "groupKey": "high-CWE-307-part1",
         "severity": "high",
         "priority": 90,
-        "status": "completed",
-        "sessionId": "devin-220f86d8c7c94764a25dbec793149ffd",
-        "sessionUrl": "https://app.devin.ai/sessions/220f86d8c7c94764a25dbec793149ffd",
-        "startedAt": "2026-01-26T19:11:10.137Z",
-        "sessionProgress": 100,
-        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/24",
-        "completedAt": "2026-01-26T19:33:43.269Z",
-        "confidenceScore": 0.8800000000000001
+        "status": "pending"
       },
       {
-        "id": "0737ae71-4859-4c40-8c45-bba94fbd67bc",
+        "id": "7f4cfe26-8b63-443f-8482-beece5f1ec9c",
         "alerts": [
           {
             "number": 7,
@@ -811,14 +790,10 @@
         "groupKey": "high-CWE-307-part2",
         "severity": "high",
         "priority": 90,
-        "status": "in_progress",
-        "sessionId": "devin-67c51d10f9024b8aa574576dccf8cf03",
-        "sessionUrl": "https://app.devin.ai/sessions/67c51d10f9024b8aa574576dccf8cf03",
-        "startedAt": "2026-01-26T19:33:56.087Z",
-        "sessionProgress": 100
+        "status": "pending"
       },
       {
-        "id": "159cd6df-b7fa-48f5-8fed-19aa2c769322",
+        "id": "5d253d74-bf10-435d-a975-1a94e1e83df3",
         "alerts": [
           {
             "number": 23,
@@ -969,17 +944,10 @@
         "groupKey": "high-CWE-022",
         "severity": "high",
         "priority": 86,
-        "status": "completed",
-        "sessionId": "devin-ae2d53c3482e4324b50abe467883ea87",
-        "sessionUrl": "https://app.devin.ai/sessions/ae2d53c3482e4324b50abe467883ea87",
-        "startedAt": "2026-01-26T19:34:26.803Z",
-        "sessionProgress": 100,
-        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/25",
-        "completedAt": "2026-01-26T19:38:32.145Z",
-        "confidenceScore": 0.9
+        "status": "pending"
       },
       {
-        "id": "bfb66c14-8199-4aad-8bfd-bf0266c0b826",
+        "id": "3edfb8fd-6720-42bb-a7b2-7a5ede4d6245",
         "alerts": [
           {
             "number": 20,
@@ -1118,14 +1086,10 @@
         "groupKey": "high-CWE-089",
         "severity": "high",
         "priority": 86,
-        "status": "in_progress",
-        "sessionId": "devin-bd516cd5f1464b06b86d2a2ecf4a1284",
-        "sessionUrl": "https://app.devin.ai/sessions/bd516cd5f1464b06b86d2a2ecf4a1284",
-        "startedAt": "2026-01-26T19:35:47.718Z",
-        "sessionProgress": 100
+        "status": "pending"
       },
       {
-        "id": "fc417124-da2e-4c8d-a9d3-b60d3c67925d",
+        "id": "2447c3a2-88a3-4046-a14c-adf5ce6d87a4",
         "alerts": [
           {
             "number": 2,
@@ -1220,14 +1184,10 @@
         "groupKey": "high-CWE-307-part3",
         "severity": "high",
         "priority": 84,
-        "status": "in_progress",
-        "sessionId": "devin-dfaf7539f93b4c04b581157604e655c9",
-        "sessionUrl": "https://app.devin.ai/sessions/dfaf7539f93b4c04b581157604e655c9",
-        "startedAt": "2026-01-26T19:38:44.684Z",
-        "sessionProgress": 0
+        "status": "pending"
       },
       {
-        "id": "e7b5e1cb-8de2-4105-8d50-18c4a19c9d6f",
+        "id": "fff9a58f-35c4-470f-8581-7d08cc2cd2cf",
         "alerts": [
           {
             "number": 17,
@@ -1279,7 +1239,7 @@
         "status": "pending"
       },
       {
-        "id": "980c80fe-f3cb-4161-8272-13f965e5ae2a",
+        "id": "0462533f-5bee-444d-b9b3-5510fae9cb9a",
         "alerts": [
           {
             "number": 27,
@@ -1331,466 +1291,8 @@
         "status": "pending"
       }
     ],
-    "sessions": [
-      {
-        "sessionId": "devin-74dec295f2d747e5bfd5fcb33b58e1de",
-        "url": "https://app.devin.ai/sessions/devin-74dec295f2d747e5bfd5fcb33b58e1de",
-        "status": "blocked",
-        "batchId": "3fcd2821-6615-48f4-b928-c69b8505c908",
-        "structuredOutput": {
-          "fixes": [
-            {
-              "status": "completed",
-              "filePath": "src/routes/admin.js",
-              "fixedCode": "execFile('ping', ['-c', '4', host], (error, stdout, stderr) => {",
-              "alertNumber": 16,
-              "explanation": "Replaced exec with execFile to prevent command injection.",
-              "testsPassed": null,
-              "originalCode": "exec('ping -c 4 ' + host, (error, stdout, stderr) => {",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/admin.js",
-              "fixedCode": "execFile('tar', ['-czf', outputPath, '/var/log'], (error, stdout, stderr) => {",
-              "alertNumber": 15,
-              "explanation": "Replaced exec with execFile to prevent command injection.",
-              "testsPassed": null,
-              "originalCode": "exec(`tar -czf /tmp/${filename}.tar.gz /var/log`, (error, stdout, stderr) => {",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/admin.js",
-              "fixedCode": "execFile('nslookup', [domain], (error, stdout, stderr) => {",
-              "alertNumber": 14,
-              "explanation": "Replaced exec with execFile to prevent command injection.",
-              "testsPassed": null,
-              "originalCode": "exec(command, (error, stdout, stderr) => {",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/admin.js",
-              "fixedCode": "execFile('ping', ['-c', '4', host], (error, stdout, stderr) => {",
-              "alertNumber": 13,
-              "explanation": "Replaced exec with execFile to prevent command injection.",
-              "testsPassed": null,
-              "originalCode": "exec(`ping -c 4 ${host}`, (error, stdout, stderr) => {",
-              "confidenceScore": 0.9
-            }
-          ],
-          "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/23",
-          "progress": 100,
-          "checklist": {
-            "testsRun": false,
-            "prCreated": true,
-            "alertsFixed": 4,
-            "testsPassed": false,
-            "branchCreated": true,
-            "alertsAnalyzed": 4,
-            "repositoryCloned": true
-          },
-          "currentTask": "Fixing CodeQL security vulnerabilities",
-          "confidenceScore": 0.9,
-          "confidenceExplanation": "The fixes implemented are based on established security practices and have been tested for syntax correctness."
-        },
-        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/23",
-        "createdAt": "2026-01-26T19:10:07.615013Z",
-        "updatedAt": "2026-01-26T19:24:05.212582Z",
-        "messages": [
-          {
-            "timestamp": "2026-01-26T19:10:07.620001+00:00"
-          },
-          {
-            "timestamp": "2026-01-26T19:10:37.289437+00:00"
-          },
-          {
-            "timestamp": "2026-01-26T19:24:03.482719+00:00"
-          }
-        ]
-      },
-      {
-        "sessionId": "devin-ab1cb524f0b9408d9c6c1459d156ba46",
-        "url": "https://app.devin.ai/sessions/devin-ab1cb524f0b9408d9c6c1459d156ba46",
-        "status": "working",
-        "batchId": "0e5db8d2-b4ba-42c4-bab7-10511fd900d8",
-        "structuredOutput": {
-          "fixes": [
-            {
-              "status": "completed",
-              "filePath": "src/routes/files.js",
-              "fixedCode": "if (!filename || typeof filename !== 'string' || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {",
-              "alertNumber": 26,
-              "explanation": "Ensured filename is a string to prevent type confusion if an array is passed.",
-              "testsPassed": null,
-              "originalCode": "if (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/files.js",
-              "fixedCode": "if (!filename || typeof filename !== 'string' || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {",
-              "alertNumber": 25,
-              "explanation": "Ensured filename is a string to prevent type confusion if an array is passed.",
-              "testsPassed": null,
-              "originalCode": "if (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/files.js",
-              "fixedCode": "if (!filename || typeof filename !== 'string' || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {",
-              "alertNumber": 24,
-              "explanation": "Ensured filename is a string to prevent type confusion if an array is passed.",
-              "testsPassed": null,
-              "originalCode": "if (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) {",
-              "confidenceScore": 0.9
-            }
-          ],
-          "prUrl": null,
-          "progress": 100,
-          "checklist": {
-            "testsRun": false,
-            "prCreated": false,
-            "alertsFixed": 3,
-            "testsPassed": null,
-            "branchCreated": true,
-            "alertsAnalyzed": 3,
-            "repositoryCloned": true
-          },
-          "currentTask": "Create PR with security fix",
-          "confidenceScore": 0.9,
-          "confidenceExplanation": "The fixes are straightforward and follow established security patterns."
-        },
-        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/22",
-        "createdAt": "2026-01-26T19:10:38.320795Z",
-        "updatedAt": "2026-01-26T19:13:03.034562Z",
-        "messages": [
-          {
-            "timestamp": "2026-01-26T19:10:38.325258+00:00"
-          },
-          {
-            "timestamp": "2026-01-26T19:11:01.686000+00:00"
-          }
-        ]
-      },
-      {
-        "sessionId": "devin-220f86d8c7c94764a25dbec793149ffd",
-        "url": "https://app.devin.ai/sessions/devin-220f86d8c7c94764a25dbec793149ffd",
-        "status": "blocked",
-        "batchId": "b77fc696-68d8-44a0-8120-2b1fe34b2c37",
-        "structuredOutput": {
-          "fixes": [
-            {
-              "status": "completed",
-              "filePath": "src/routes/admin.js",
-              "fixedCode": "router.get('/ping', commandRateLimiter, (req, res) => { const host = req.query.host; exec('ping -c 4 ' + host, (error, stdout, stderr) => { ... }); });",
-              "alertNumber": 12,
-              "explanation": "Added rate limiting to the /ping endpoint to prevent abuse.",
-              "testsPassed": null,
-              "originalCode": "router.get('/ping', (req, res) => { const host = req.query.host; exec('ping -c 4 ' + host, (error, stdout, stderr) => { ... }); });",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/users.js",
-              "fixedCode": "router.post('/login', loginRateLimiter, (req, res) => { const { username, password } = req.body; ... });",
-              "alertNumber": 11,
-              "explanation": "Implemented stricter rate limiting for the login endpoint to prevent brute force attacks.",
-              "testsPassed": null,
-              "originalCode": "router.post('/login', (req, res) => { const { username, password } = req.body; ... });",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/admin.js",
-              "fixedCode": "router.get('/lookup', commandRateLimiter, (req, res) => { const domain = req.query.domain; exec(command, (error, stdout, stderr) => { ... }); });",
-              "alertNumber": 10,
-              "explanation": "Added rate limiting to the /lookup endpoint to prevent abuse.",
-              "testsPassed": null,
-              "originalCode": "router.get('/lookup', (req, res) => { const domain = req.query.domain; exec(command, (error, stdout, stderr) => { ... }); });",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/users.js",
-              "fixedCode": "router.get('/safe-search', queryRateLimiter, (req, res) => { const username = req.query.username; ... });",
-              "alertNumber": 9,
-              "explanation": "Implemented rate limiting for the safe-search endpoint to prevent abuse.",
-              "testsPassed": null,
-              "originalCode": "router.get('/safe-search', (req, res) => { const username = req.query.username; ... });",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/admin.js",
-              "fixedCode": "router.post('/backup', commandRateLimiter, authenticate, (req, res) => { const filename = req.body.filename; ... });",
-              "alertNumber": 8,
-              "explanation": "Added rate limiting to the /backup endpoint to prevent abuse.",
-              "testsPassed": null,
-              "originalCode": "router.post('/backup', authenticate, (req, res) => { const filename = req.body.filename; ... });",
-              "confidenceScore": 0.9
-            }
-          ],
-          "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/24",
-          "progress": 100,
-          "checklist": {
-            "testsRun": false,
-            "prCreated": true,
-            "alertsFixed": 5,
-            "testsPassed": false,
-            "branchCreated": true,
-            "alertsAnalyzed": 5,
-            "repositoryCloned": true
-          },
-          "currentTask": "Fix CodeQL security vulnerabilities",
-          "confidenceScore": 0.9,
-          "confidenceExplanation": "The fixes are straightforward and follow established security patterns."
-        },
-        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/24",
-        "createdAt": "2026-01-26T19:11:09.019363Z",
-        "updatedAt": "2026-01-26T19:17:07.157482Z",
-        "messages": [
-          {
-            "timestamp": "2026-01-26T19:11:09.024158+00:00"
-          },
-          {
-            "timestamp": "2026-01-26T19:11:36.957428+00:00"
-          },
-          {
-            "timestamp": "2026-01-26T19:17:05.185039+00:00"
-          }
-        ]
-      },
-      {
-        "sessionId": "devin-67c51d10f9024b8aa574576dccf8cf03",
-        "url": "https://app.devin.ai/sessions/devin-67c51d10f9024b8aa574576dccf8cf03",
-        "status": "working",
-        "batchId": "0737ae71-4859-4c40-8c45-bba94fbd67bc",
-        "structuredOutput": {
-          "fixes": [
-            {
-              "status": "completed",
-              "filePath": "src/routes/admin.js",
-              "fixedCode": "router.get('/ping', commandRateLimiter, (req, res) => { const host = req.query.host; exec('ping -c 4 ' + host, (error, stdout, stderr) => { ... }); });",
-              "alertNumber": 7,
-              "explanation": "Added rate limiting to the /ping route to prevent abuse.",
-              "testsPassed": null,
-              "originalCode": "router.get('/ping', (req, res) => { const host = req.query.host; exec('ping -c 4 ' + host, (error, stdout, stderr) => { ... }); });",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/users.js",
-              "fixedCode": "router.get('/find', dbRateLimiter, (req, res) => { const email = req.query.email; ... });",
-              "alertNumber": 6,
-              "explanation": "Added rate limiting to the /find route to prevent abuse.",
-              "testsPassed": null,
-              "originalCode": "router.get('/find', (req, res) => { const email = req.query.email; ... });",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/files.js",
-              "fixedCode": "router.get('/safe-read', fsRateLimiter, (req, res) => { const filename = req.query.filename; ... });",
-              "alertNumber": 5,
-              "explanation": "Added rate limiting to the /safe-read route to prevent abuse.",
-              "testsPassed": null,
-              "originalCode": "router.get('/safe-read', (req, res) => { const filename = req.query.filename; ... });",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/files.js",
-              "fixedCode": "router.post('/write', fsRateLimiter, (req, res) => { const { filename, content } = req.body; ... });",
-              "alertNumber": 4,
-              "explanation": "Added rate limiting to the /write route to prevent abuse.",
-              "testsPassed": null,
-              "originalCode": "router.post('/write', (req, res) => { const { filename, content } = req.body; ... });",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/users.js",
-              "fixedCode": "router.get('/search', dbRateLimiter, (req, res) => { const username = req.query.username; ... });",
-              "alertNumber": 3,
-              "explanation": "Added rate limiting to the /search route to prevent abuse.",
-              "testsPassed": null,
-              "originalCode": "router.get('/search', (req, res) => { const username = req.query.username; ... });",
-              "confidenceScore": 0.9
-            }
-          ],
-          "prUrl": null,
-          "progress": 100,
-          "checklist": {
-            "testsRun": false,
-            "prCreated": false,
-            "alertsFixed": 5,
-            "testsPassed": null,
-            "branchCreated": true,
-            "alertsAnalyzed": 5,
-            "repositoryCloned": true
-          },
-          "currentTask": "Create PR with security fixes",
-          "confidenceScore": 0.9,
-          "confidenceExplanation": "The fixes are straightforward and follow established security patterns."
-        },
-        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/27",
-        "createdAt": "2026-01-26T19:33:55.947836Z",
-        "updatedAt": "2026-01-26T19:38:45.241747Z",
-        "messages": [
-          {
-            "timestamp": "2026-01-26T19:33:55.953125+00:00"
-          },
-          {
-            "timestamp": "2026-01-26T19:34:17.402839+00:00"
-          }
-        ]
-      },
-      {
-        "sessionId": "devin-ae2d53c3482e4324b50abe467883ea87",
-        "url": "https://app.devin.ai/sessions/devin-ae2d53c3482e4324b50abe467883ea87",
-        "status": "working",
-        "batchId": "159cd6df-b7fa-48f5-8fed-19aa2c769322",
-        "structuredOutput": {
-          "fixes": [
-            {
-              "status": "completed",
-              "filePath": "src/routes/files.js",
-              "fixedCode": "// FIXED: Validate filename and ensure it doesn't contain path traversal sequences\nif (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\')) {\n  return res.status(400).json({ error: 'Invalid filename' });\n}\nconst filePath = path.join(UPLOADS_DIR, filename);\nconst resolvedPath = path.resolve(filePath);\nif (!resolvedPath.startsWith(path.resolve(UPLOADS_DIR) + path.sep)) {\n  return res.status(400).json({ error: 'Invalid path' });\n}",
-              "alertNumber": 23,
-              "explanation": "The fix involves validating the filename to prevent path traversal attacks and ensuring the resolved path is within the allowed uploads directory.",
-              "testsPassed": null,
-              "originalCode": "// VULNERABLE: Direct path concatenation without sanitization\nconst filePath = path.join(UPLOADS_DIR, filename);",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/files.js",
-              "fixedCode": "// FIXED: Validate filename and ensure it doesn't contain path traversal sequences\nif (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\')) {\n  return res.status(400).json({ error: 'Invalid filename' });\n}\nconst filePath = path.join(UPLOADS_DIR, filename);\nconst resolvedPath = path.resolve(filePath);\nif (!resolvedPath.startsWith(path.resolve(UPLOADS_DIR) + path.sep)) {\n  return res.status(400).json({ error: 'Invalid path' });\n}\nconst content = fs.readFileSync(resolvedPath, 'utf8');",
-              "alertNumber": 22,
-              "explanation": "The fix involves validating the filename to prevent path traversal attacks and ensuring the resolved path is within the allowed uploads directory.",
-              "testsPassed": null,
-              "originalCode": "const content = fs.readFileSync(filepath, 'utf8');",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/files.js",
-              "fixedCode": "// FIXED: Validate filename and ensure it doesn't contain path traversal sequences\nif (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\')) {\n  return res.status(400).json({ error: 'Invalid filename' });\n}\nconst filePath = path.join(UPLOADS_DIR, filename);\nconst resolvedPath = path.resolve(filePath);\nif (!resolvedPath.startsWith(path.resolve(UPLOADS_DIR) + path.sep)) {\n  return res.status(400).json({ error: 'Invalid path' });\n}\nfs.writeFileSync(resolvedPath, content);",
-              "alertNumber": 21,
-              "explanation": "The fix involves validating the filename to prevent path traversal attacks and ensuring the resolved path is within the allowed uploads directory.",
-              "testsPassed": null,
-              "originalCode": "const filePath = UPLOADS_DIR + '/' + filename;",
-              "confidenceScore": 0.9
-            }
-          ],
-          "prUrl": null,
-          "progress": 100,
-          "checklist": {
-            "testsRun": false,
-            "prCreated": false,
-            "alertsFixed": 3,
-            "testsPassed": null,
-            "branchCreated": true,
-            "alertsAnalyzed": 3,
-            "repositoryCloned": true
-          },
-          "currentTask": "Implement secure path handling fixes for all 3 alerts",
-          "confidenceScore": 0.9,
-          "confidenceExplanation": "The fixes are straightforward and follow established security patterns for path validation."
-        },
-        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/25",
-        "createdAt": "2026-01-26T19:34:26.583429Z",
-        "updatedAt": "2026-01-26T19:36:50.365421Z",
-        "messages": [
-          {
-            "timestamp": "2026-01-26T19:34:26.588914+00:00"
-          },
-          {
-            "timestamp": "2026-01-26T19:34:46.596624+00:00"
-          }
-        ]
-      },
-      {
-        "sessionId": "devin-bd516cd5f1464b06b86d2a2ecf4a1284",
-        "url": "https://app.devin.ai/sessions/devin-bd516cd5f1464b06b86d2a2ecf4a1284",
-        "status": "working",
-        "batchId": "bfb66c14-8199-4aad-8bfd-bf0266c0b826",
-        "structuredOutput": {
-          "fixes": [
-            {
-              "status": "completed",
-              "filePath": "src/routes/users.js",
-              "fixedCode": "const query = \"SELECT id, username, email FROM users WHERE username = ?\";",
-              "alertNumber": 20,
-              "explanation": "Replaced string concatenation with a parameterized query to prevent SQL injection.",
-              "testsPassed": null,
-              "originalCode": "const query = \"SELECT id, username, email FROM users WHERE username = '\" + username + \"'\";",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/users.js",
-              "fixedCode": "const query = \"SELECT id, username, email FROM users WHERE email = ?\";",
-              "alertNumber": 19,
-              "explanation": "Replaced template literal with a parameterized query to prevent SQL injection.",
-              "testsPassed": null,
-              "originalCode": "const query = `SELECT id, username, email FROM users WHERE email = '${email}'`;",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/users.js",
-              "fixedCode": "const query = \"SELECT * FROM users WHERE username = ? AND password = ?\";",
-              "alertNumber": 18,
-              "explanation": "Replaced string concatenation with a parameterized query to prevent SQL injection.",
-              "testsPassed": null,
-              "originalCode": "const query = \"SELECT * FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\";",
-              "confidenceScore": 0.9
-            }
-          ],
-          "prUrl": null,
-          "progress": 100,
-          "checklist": {
-            "testsRun": false,
-            "prCreated": false,
-            "alertsFixed": 3,
-            "testsPassed": null,
-            "branchCreated": true,
-            "alertsAnalyzed": 3,
-            "repositoryCloned": true
-          },
-          "currentTask": "Create PR with security fix commit",
-          "confidenceScore": 0.9,
-          "confidenceExplanation": "The fixes are straightforward and follow established security patterns."
-        },
-        "createdAt": "2026-01-26T19:35:47.499406Z",
-        "updatedAt": "2026-01-26T19:36:19.169442Z",
-        "messages": [
-          {
-            "timestamp": "2026-01-26T19:35:47.510273+00:00"
-          },
-          {
-            "timestamp": "2026-01-26T19:36:15.093863+00:00"
-          }
-        ]
-      },
-      {
-        "sessionId": "devin-dfaf7539f93b4c04b581157604e655c9",
-        "url": "https://app.devin.ai/sessions/dfaf7539f93b4c04b581157604e655c9",
-        "status": "working",
-        "batchId": "fc417124-da2e-4c8d-a9d3-b60d3c67925d",
-        "createdAt": "2026-01-26T19:38:44.684Z",
-        "updatedAt": "2026-01-26T19:38:44.684Z",
-        "messages": []
-      }
-    ],
-    "prsCreated": [
-      "https://github.com/tedfoley/vulnerable-demo-app/pull/24",
-      "https://github.com/tedfoley/vulnerable-demo-app/pull/23"
-    ],
+    "sessions": [],
+    "prsCreated": [],
     "securityPosture": {
       "before": {
         "total": 27,
@@ -1798,7 +1300,7 @@
         "high": 19,
         "medium": 1,
         "low": 0,
-        "timestamp": "2026-01-26T19:10:05.210Z"
+        "timestamp": "2026-01-26T19:59:31.906Z"
       }
     },
     "controlState": {
@@ -1809,17 +1311,12 @@
     }
   },
   "learningStats": {
-    "totalRecords": 24,
+    "totalRecords": 15,
     "overallSuccessRate": 1,
     "topCWEs": [
       {
         "cwe": "CWE-307",
-        "count": 12,
-        "successRate": 1
-      },
-      {
-        "cwe": "CWE-078",
-        "count": 4,
+        "count": 7,
         "successRate": 1
       },
       {
