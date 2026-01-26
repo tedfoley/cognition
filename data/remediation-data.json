@@ -812,7 +812,7 @@
         "sessionId": "devin-53921defa60a4f7097573ff432cf8287",
         "sessionUrl": "https://app.devin.ai/sessions/53921defa60a4f7097573ff432cf8287",
         "startedAt": "2026-01-26T02:42:42.498Z",
-        "sessionProgress": 0
+        "sessionProgress": 20
       },
       {
         "id": "272d10d8-49e7-45a7-9b82-1d6b2cdb2000",
@@ -1547,7 +1547,74 @@
         "url": "https://app.devin.ai/sessions/devin-53921defa60a4f7097573ff432cf8287",
         "status": "working",
         "batchId": "34ffc18a-22b9-4256-b931-b5ee01821666",
-        "structuredOutput": null,
+        "structuredOutput": {
+          "fixes": [
+            {
+              "status": "pending",
+              "filePath": "src/routes/admin.js",
+              "fixedCode": "",
+              "alertNumber": 7,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/users.js",
+              "fixedCode": "",
+              "alertNumber": 6,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 5,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 4,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/users.js",
+              "fixedCode": "",
+              "alertNumber": 3,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            }
+          ],
+          "prUrl": null,
+          "progress": 20,
+          "checklist": {
+            "testsRun": false,
+            "prCreated": false,
+            "alertsFixed": 0,
+            "testsPassed": false,
+            "branchCreated": true,
+            "alertsAnalyzed": 0,
+            "repositoryCloned": true
+          },
+          "currentTask": "Clone repository and create branch",
+          "confidenceScore": null,
+          "confidenceExplanation": ""
+        },
         "createdAt": "2026-01-26T02:42:42.314629Z",
         "updatedAt": "2026-01-26T02:45:07.618709Z",
         "messages": [
