@@ -200,7 +200,11 @@
         "groupKey": "critical-CWE-078",
         "severity": "critical",
         "priority": 108,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "devin-44cc3c2591204027916d36af8c22122d",
+        "sessionUrl": "https://app.devin.ai/sessions/44cc3c2591204027916d36af8c22122d",
+        "startedAt": "2026-01-26T02:36:41.061Z",
+        "sessionProgress": 0
       },
       {
         "id": "f6926b9f-2ff4-469f-b585-fc8cbafe5c06",
@@ -330,7 +334,10 @@
         "groupKey": "critical-CWE-843",
         "severity": "critical",
         "priority": 106,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "devin-f46d73035f5c4762bb4b256d8ed0c040",
+        "sessionUrl": "https://app.devin.ai/sessions/f46d73035f5c4762bb4b256d8ed0c040",
+        "startedAt": "2026-01-26T02:37:12.039Z"
       },
       {
         "id": "9c502fba-047f-47fb-ba7f-2abf704892d6",
@@ -560,7 +567,10 @@
         "groupKey": "high-CWE-307-part1",
         "severity": "high",
         "priority": 90,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "devin-bc2f5e2d861748d0a941f620908756e9",
+        "sessionUrl": "https://app.devin.ai/sessions/bc2f5e2d861748d0a941f620908756e9",
+        "startedAt": "2026-01-26T02:37:42.490Z"
       },
       {
         "id": "34ffc18a-22b9-4256-b931-b5ee01821666",
@@ -1291,7 +1301,22 @@
         "status": "pending"
       }
     ],
-    "sessions": [],
+    "sessions": [
+      {
+        "sessionId": "devin-44cc3c2591204027916d36af8c22122d",
+        "url": "https://app.devin.ai/sessions/devin-44cc3c2591204027916d36af8c22122d",
+        "status": "working",
+        "batchId": "9b1e2a96-cfd8-4fb4-add7-bfe83326de39",
+        "structuredOutput": null,
+        "createdAt": "2026-01-26T02:36:40.947044Z",
+        "updatedAt": "2026-01-26T02:36:46.812616Z",
+        "messages": [
+          {
+            "timestamp": "2026-01-26T02:36:40.952254+00:00"
+          }
+        ]
+      }
+    ],
     "prsCreated": [],
     "securityPosture": {
       "before": {
