@@ -1348,7 +1348,7 @@
         "sessionId": "devin-e2458fffd29245509c6269e28fb5dc58",
         "sessionUrl": "https://app.devin.ai/sessions/e2458fffd29245509c6269e28fb5dc58",
         "startedAt": "2026-01-26T02:51:09.421Z",
-        "sessionProgress": 0
+        "sessionProgress": 20
       }
     ],
     "sessions": [
@@ -1900,7 +1900,34 @@
         "url": "https://app.devin.ai/sessions/devin-e2458fffd29245509c6269e28fb5dc58",
         "status": "working",
         "batchId": "a0778fb2-7dad-44db-a10c-ff69b7339f9b",
-        "structuredOutput": null,
+        "structuredOutput": {
+          "fixes": [
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 27,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            }
+          ],
+          "prUrl": null,
+          "progress": 20,
+          "checklist": {
+            "testsRun": false,
+            "prCreated": false,
+            "alertsFixed": 0,
+            "testsPassed": false,
+            "branchCreated": true,
+            "alertsAnalyzed": 0,
+            "repositoryCloned": true
+          },
+          "currentTask": "Analyze alert #27 (js/http-to-file-access) in src/routes/files.js line 48",
+          "confidenceScore": null,
+          "confidenceExplanation": ""
+        },
         "createdAt": "2026-01-26T02:51:09.289308Z",
         "updatedAt": "2026-01-26T02:51:43.802216Z",
         "messages": [
