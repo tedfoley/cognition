@@ -815,7 +815,7 @@
         "sessionId": "devin-53921defa60a4f7097573ff432cf8287",
         "sessionUrl": "https://app.devin.ai/sessions/53921defa60a4f7097573ff432cf8287",
         "startedAt": "2026-01-26T02:42:42.498Z",
-        "sessionProgress": 20
+        "sessionProgress": 40
       },
       {
         "id": "272d10d8-49e7-45a7-9b82-1d6b2cdb2000",
@@ -1115,7 +1115,10 @@
         "groupKey": "high-CWE-089",
         "severity": "high",
         "priority": 86,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "devin-91807621ca02466fbfa24d4fc99f3b72",
+        "sessionUrl": "https://app.devin.ai/sessions/91807621ca02466fbfa24d4fc99f3b72",
+        "startedAt": "2026-01-26T02:46:10.350Z"
       },
       {
         "id": "3d05750e-62c8-4320-9a64-64f01455347f",
@@ -1560,7 +1563,7 @@
               "alertNumber": 7,
               "explanation": "",
               "testsPassed": null,
-              "originalCode": "",
+              "originalCode": "exec('ping -c 4 ' + host, (error, stdout, stderr) => {",
               "confidenceScore": null
             },
             {
@@ -1570,7 +1573,7 @@
               "alertNumber": 6,
               "explanation": "",
               "testsPassed": null,
-              "originalCode": "",
+              "originalCode": "const query = \"SELECT id, username, email FROM users WHERE username = '\" + username + \"'\";",
               "confidenceScore": null
             },
             {
@@ -1580,7 +1583,7 @@
               "alertNumber": 5,
               "explanation": "",
               "testsPassed": null,
-              "originalCode": "",
+              "originalCode": "const filePath = path.join(UPLOADS_DIR, filename);",
               "confidenceScore": null
             },
             {
@@ -1590,7 +1593,7 @@
               "alertNumber": 4,
               "explanation": "",
               "testsPassed": null,
-              "originalCode": "",
+              "originalCode": "const filepath = req.query.path;",
               "confidenceScore": null
             },
             {
@@ -1600,22 +1603,22 @@
               "alertNumber": 3,
               "explanation": "",
               "testsPassed": null,
-              "originalCode": "",
+              "originalCode": "const query = `SELECT id, username, email FROM users WHERE email = '${email}'`;",
               "confidenceScore": null
             }
           ],
           "prUrl": null,
-          "progress": 20,
+          "progress": 40,
           "checklist": {
             "testsRun": false,
             "prCreated": false,
             "alertsFixed": 0,
             "testsPassed": false,
             "branchCreated": true,
-            "alertsAnalyzed": 0,
+            "alertsAnalyzed": 5,
             "repositoryCloned": true
           },
-          "currentTask": "Analyze all 5 alerts - read affected files and understand the vulnerabilities",
+          "currentTask": "Implement rate limiting fixes for all affected routes (admin.js, users.js, files.js)",
           "confidenceScore": null,
           "confidenceExplanation": ""
         },
