@@ -1639,7 +1639,54 @@
         "url": "https://app.devin.ai/sessions/devin-ed5fd8072c2746b39902e789e24245af",
         "status": "working",
         "batchId": "5d253d74-bf10-435d-a975-1a94e1e83df3",
-        "structuredOutput": null,
+        "structuredOutput": {
+          "fixes": [
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 23,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 22,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 21,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            }
+          ],
+          "prUrl": null,
+          "progress": 0,
+          "checklist": {
+            "testsRun": false,
+            "prCreated": false,
+            "alertsFixed": 0,
+            "testsPassed": false,
+            "branchCreated": false,
+            "alertsAnalyzed": 0,
+            "repositoryCloned": false
+          },
+          "currentTask": "Clone repository and create branch fix/codeql-high-CWE-022-1769459512612",
+          "confidenceScore": null,
+          "confidenceExplanation": ""
+        },
         "createdAt": "2026-01-26T20:31:52.950511Z",
         "updatedAt": "2026-01-26T20:32:35.860477Z",
         "messages": [
