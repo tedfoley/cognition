@@ -1531,8 +1531,9 @@
           "confidenceScore": 0.9,
           "confidenceExplanation": "The fixes are straightforward and follow established security patterns."
         },
+        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/15",
         "createdAt": "2026-01-26T02:37:42.363975Z",
-        "updatedAt": "2026-01-26T02:41:35.837282Z",
+        "updatedAt": "2026-01-26T02:45:44.108291Z",
         "messages": [
           {
             "timestamp": "2026-01-26T02:37:42.370587+00:00"
