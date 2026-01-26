@@ -1775,7 +1775,44 @@
         "url": "https://app.devin.ai/sessions/devin-08e1b1c610464f859afe44aaba44e235",
         "status": "working",
         "batchId": "3d05750e-62c8-4320-9a64-64f01455347f",
-        "structuredOutput": null,
+        "structuredOutput": {
+          "fixes": [
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 2,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 1,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            }
+          ],
+          "prUrl": null,
+          "progress": 0,
+          "checklist": {
+            "testsRun": false,
+            "prCreated": false,
+            "alertsFixed": 0,
+            "testsPassed": false,
+            "branchCreated": false,
+            "alertsAnalyzed": 0,
+            "repositoryCloned": false
+          },
+          "currentTask": "Clone repository and create branch fix/codeql-high-CWE-307-part3-1769395653777",
+          "confidenceScore": null,
+          "confidenceExplanation": ""
+        },
         "createdAt": "2026-01-26T02:47:34.106801Z",
         "updatedAt": "2026-01-26T02:47:56.936845Z",
         "messages": [
