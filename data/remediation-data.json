@@ -1338,15 +1338,15 @@
               "alertNumber": 14,
               "explanation": "Replaced exec with execFile to prevent command injection and added domain validation.",
               "testsPassed": null,
-              "originalCode": "const command = 'nslookup ' + domain;",
+              "originalCode": "exec(command, (error, stdout, stderr) => {",
               "confidenceScore": 0.9
             },
             {
-              "status": "pending",
+              "status": "in_progress",
               "filePath": "src/routes/admin.js",
               "fixedCode": null,
               "alertNumber": 13,
-              "explanation": null,
+              "explanation": "This fix is still pending as I need to implement the changes for the safe-ping endpoint.",
               "testsPassed": null,
               "originalCode": "exec(`ping -c 4 ${host}`, (error, stdout, stderr) => {",
               "confidenceScore": null
@@ -1363,7 +1363,7 @@
             "alertsAnalyzed": 4,
             "repositoryCloned": true
           },
-          "currentTask": "Fix command injection vulnerabilities in src/routes/admin.js",
+          "currentTask": "Fix remaining command injection vulnerability in safe-ping endpoint",
           "confidenceScore": 0.9,
           "confidenceExplanation": "High confidence in the fixes due to clear understanding of the vulnerabilities and secure coding practices."
         },
