@@ -1615,7 +1615,7 @@
             "alertsAnalyzed": 0,
             "repositoryCloned": true
           },
-          "currentTask": "Clone repository and create branch",
+          "currentTask": "Analyze all 5 alerts - read affected files and understand the vulnerabilities",
           "confidenceScore": null,
           "confidenceExplanation": ""
         },
