@@ -1323,12 +1323,20 @@
       },
       {
         "sessionId": "devin-f24e35bbedde4752828990074ee34ccd",
-        "url": "https://app.devin.ai/sessions/f24e35bbedde4752828990074ee34ccd",
+        "url": "https://app.devin.ai/sessions/devin-f24e35bbedde4752828990074ee34ccd",
         "status": "working",
         "batchId": "00c78f9f-c78b-4ed0-a4ae-8694188e5029",
-        "createdAt": "2026-01-26T16:43:57.540Z",
-        "updatedAt": "2026-01-26T16:43:57.540Z",
-        "messages": []
+        "structuredOutput": null,
+        "createdAt": "2026-01-26T16:43:57.400044Z",
+        "updatedAt": "2026-01-26T16:44:22.922533Z",
+        "messages": [
+          {
+            "timestamp": "2026-01-26T16:43:57.404420+00:00"
+          },
+          {
+            "timestamp": "2026-01-26T16:44:19.334284+00:00"
+          }
+        ]
       },
       {
         "sessionId": "devin-ac73d31c5fea47aa99abd48a017acad8",
