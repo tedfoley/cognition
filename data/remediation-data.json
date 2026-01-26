@@ -204,7 +204,7 @@
         "sessionId": "devin-74dec295f2d747e5bfd5fcb33b58e1de",
         "sessionUrl": "https://app.devin.ai/sessions/74dec295f2d747e5bfd5fcb33b58e1de",
         "startedAt": "2026-01-26T19:10:07.800Z",
-        "sessionProgress": 50
+        "sessionProgress": 75
       },
       {
         "id": "0e5db8d2-b4ba-42c4-bab7-10511fd900d8",
@@ -1312,7 +1312,7 @@
         "structuredOutput": {
           "fixes": [
             {
-              "status": "completed",
+              "status": "pending",
               "filePath": "src/routes/admin.js",
               "fixedCode": "execFile('ping', ['-c', '4', host], (error, stdout, stderr) => {",
               "alertNumber": 16,
@@ -1322,7 +1322,7 @@
               "confidenceScore": 0.9
             },
             {
-              "status": "completed",
+              "status": "pending",
               "filePath": "src/routes/admin.js",
               "fixedCode": "execFile('tar', ['-czf', outputPath, '/var/log'], (error, stdout, stderr) => {",
               "alertNumber": 15,
@@ -1332,28 +1332,28 @@
               "confidenceScore": 0.9
             },
             {
-              "status": "pending",
+              "status": "in_progress",
               "filePath": "src/routes/admin.js",
-              "fixedCode": "",
+              "fixedCode": "execFile('nslookup', [domain], (error, stdout, stderr) => {",
               "alertNumber": 14,
-              "explanation": "",
+              "explanation": "Replaced exec with execFile to prevent command injection by passing arguments as an array.",
               "testsPassed": null,
               "originalCode": "exec(command, (error, stdout, stderr) => {",
-              "confidenceScore": null
+              "confidenceScore": 0.8
             },
             {
-              "status": "pending",
+              "status": "in_progress",
               "filePath": "src/routes/admin.js",
-              "fixedCode": "",
+              "fixedCode": "execFile('ping', ['-c', '4', host], (error, stdout, stderr) => {",
               "alertNumber": 13,
-              "explanation": "",
+              "explanation": "Replaced exec with execFile to prevent command injection by passing arguments as an array.",
               "testsPassed": null,
               "originalCode": "exec(`ping -c 4 ${host}`, (error, stdout, stderr) => {",
-              "confidenceScore": null
+              "confidenceScore": 0.8
             }
           ],
           "prUrl": null,
-          "progress": 50,
+          "progress": 75,
           "checklist": {
             "testsRun": false,
             "prCreated": false,
@@ -1364,8 +1364,8 @@
             "repositoryCloned": true
           },
           "currentTask": "Fixing CodeQL vulnerabilities in src/routes/admin.js",
-          "confidenceScore": 0.9,
-          "confidenceExplanation": "The fixes implemented are straightforward and follow security best practices."
+          "confidenceScore": 0.85,
+          "confidenceExplanation": "High confidence in the fixes due to the use of execFile and input validation."
         },
         "createdAt": "2026-01-26T19:10:07.615013Z",
         "updatedAt": "2026-01-26T19:10:38.916595Z",
