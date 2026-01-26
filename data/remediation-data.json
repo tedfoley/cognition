@@ -1307,11 +1307,11 @@
       {
         "sessionId": "devin-d61286829adb4df28412ebf101ff9be5",
         "url": "https://app.devin.ai/sessions/devin-d61286829adb4df28412ebf101ff9be5",
-        "status": "pending",
+        "status": "working",
         "batchId": "1317e9ca-bff3-40ea-b054-4268f72fdf0f",
         "structuredOutput": null,
         "createdAt": "2026-01-26T19:59:34.521478Z",
-        "updatedAt": "2026-01-26T20:07:14.624879Z",
+        "updatedAt": "2026-01-26T20:07:18.378449Z",
         "messages": [
           {
             "timestamp": "2026-01-26T19:59:34.526104+00:00"
