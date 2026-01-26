@@ -334,7 +334,11 @@
         "groupKey": "critical-CWE-843",
         "severity": "critical",
         "priority": 106,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "devin-f24e35bbedde4752828990074ee34ccd",
+        "sessionUrl": "https://app.devin.ai/sessions/f24e35bbedde4752828990074ee34ccd",
+        "startedAt": "2026-01-26T16:43:57.540Z",
+        "sessionProgress": 0
       },
       {
         "id": "950984be-1d63-48da-8b59-26217ba9ffca",
@@ -1303,6 +1307,15 @@
         "batchId": "a1f4684c-0ff0-4a67-a9f3-e32121787711",
         "createdAt": "2026-01-26T16:43:26.296Z",
         "updatedAt": "2026-01-26T16:43:26.296Z",
+        "messages": []
+      },
+      {
+        "sessionId": "devin-f24e35bbedde4752828990074ee34ccd",
+        "url": "https://app.devin.ai/sessions/f24e35bbedde4752828990074ee34ccd",
+        "status": "working",
+        "batchId": "00c78f9f-c78b-4ed0-a4ae-8694188e5029",
+        "createdAt": "2026-01-26T16:43:57.540Z",
+        "updatedAt": "2026-01-26T16:43:57.540Z",
         "messages": []
       }
     ],
