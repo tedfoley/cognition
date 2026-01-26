@@ -23,6 +23,7 @@ const MAX_BATCH_TIME_MS = 1800000;       // 30 minutes max per batch
 const SESSION_START_DELAY_MS = 30000;    // 30 seconds between session starts
 const RATE_LIMIT_WAIT_MS = 60000;        // 60 seconds wait when rate limited
 const MAX_CONCURRENT_SESSIONS = 5;       // Devin's concurrent session limit
+const WAIT_FOR_SLOT_POLL_MS = 5000;      // 5 seconds between slot availability checks
 
 // Devin API response interfaces
 interface DevinCreateSessionResponse {
@@ -166,6 +167,10 @@ export class DevinOrchestrator {
           this.pollRetries.delete(batchId);
           this.pollIntervals.delete(batchId);
           this.batchStartTimes.delete(batchId);
+          
+          // Explicitly terminate the timed-out session to free up the session slot
+          await this.cleanupSession(session.sessionId, batchId);
+          
           await onComplete(batch, session);
           continue;
         }
@@ -210,6 +215,10 @@ export class DevinOrchestrator {
             this.pollRetries.delete(batchId);
             this.pollIntervals.delete(batchId);
             this.batchStartTimes.delete(batchId);
+            
+            // Explicitly terminate the session to free up the session slot
+            await this.cleanupSession(updatedSession.sessionId, batchId);
+            
             console.log(`[Orchestrator] Batch ${batchId} completed. Removed from activeSessions. Active count: ${this.activeSessions.size}, Pending: ${pendingBatches.length}`);
             await onComplete(batch, updatedSession);
           }
@@ -226,6 +235,10 @@ export class DevinOrchestrator {
             this.pollRetries.delete(batchId);
             this.pollIntervals.delete(batchId);
             this.batchStartTimes.delete(batchId);
+            
+            // Explicitly terminate the failed session to free up the session slot
+            await this.cleanupSession(session.sessionId, batchId);
+            
             console.log(`[Orchestrator] Batch ${batchId} failed (max retries). Removed from activeSessions. Active count: ${this.activeSessions.size}, Pending: ${pendingBatches.length}`);
             await onComplete(batch, session);
           } else {
@@ -505,6 +518,46 @@ export class DevinOrchestrator {
       console.error(`Error terminating session ${sessionId}:`, error);
       return false;
     }
+  }
+
+  /**
+   * Explicitly close/end a Devin session when a batch completes.
+   * This frees up the session slot so new sessions can be started.
+   * Uses the DELETE /sessions/{id} endpoint to terminate the session.
+   */
+  private async cleanupSession(sessionId: string, batchId: string): Promise<void> {
+    console.log(`[Orchestrator] Cleaning up session ${sessionId} for batch ${batchId}`);
+    const terminated = await this.terminateSession(sessionId);
+    if (terminated) {
+      console.log(`[Orchestrator] Successfully terminated session ${sessionId} to free up session slot`);
+    } else {
+      console.warn(`[Orchestrator] Failed to terminate session ${sessionId}, slot may not be freed immediately`);
+    }
+  }
+
+  /**
+   * Blocks until a session slot becomes available (activeSessions.size < maxParallelSessions).
+   * This is more elegant than breaking out of the loop when rate limited or session limit hit.
+   * Polls every WAIT_FOR_SLOT_POLL_MS (5 seconds) until a slot is available or timeout is reached.
+   * 
+   * @param timeoutMs - Maximum time to wait for a slot (default: 5 minutes)
+   * @returns true if a slot became available, false if timeout was reached
+   */
+  async waitForSessionSlot(timeoutMs: number = 300000): Promise<boolean> {
+    const startTime = Date.now();
+    
+    while (this.activeSessions.size >= this.maxParallelSessions) {
+      if (Date.now() - startTime > timeoutMs) {
+        console.warn(`[Orchestrator] Timeout waiting for session slot after ${timeoutMs}ms`);
+        return false;
+      }
+      
+      console.log(`[Orchestrator] Waiting for session slot: ${this.activeSessions.size}/${this.maxParallelSessions} sessions active`);
+      await this.sleep(WAIT_FOR_SLOT_POLL_MS);
+    }
+    
+    console.log(`[Orchestrator] Session slot available: ${this.activeSessions.size}/${this.maxParallelSessions} sessions active`);
+    return true;
   }
 
   private buildPrompt(batch: AlertBatch): string {
