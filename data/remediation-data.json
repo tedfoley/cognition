@@ -973,7 +973,7 @@
         "sessionId": "devin-ae2d53c3482e4324b50abe467883ea87",
         "sessionUrl": "https://app.devin.ai/sessions/ae2d53c3482e4324b50abe467883ea87",
         "startedAt": "2026-01-26T19:34:26.803Z",
-        "sessionProgress": 0
+        "sessionProgress": 20
       },
       {
         "id": "bfb66c14-8199-4aad-8bfd-bf0266c0b826",
@@ -1587,12 +1587,67 @@
       },
       {
         "sessionId": "devin-ae2d53c3482e4324b50abe467883ea87",
-        "url": "https://app.devin.ai/sessions/ae2d53c3482e4324b50abe467883ea87",
+        "url": "https://app.devin.ai/sessions/devin-ae2d53c3482e4324b50abe467883ea87",
         "status": "working",
         "batchId": "159cd6df-b7fa-48f5-8fed-19aa2c769322",
-        "createdAt": "2026-01-26T19:34:26.803Z",
-        "updatedAt": "2026-01-26T19:34:26.803Z",
-        "messages": []
+        "structuredOutput": {
+          "fixes": [
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 23,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 22,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "",
+              "alertNumber": 21,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            }
+          ],
+          "prUrl": null,
+          "progress": 20,
+          "checklist": {
+            "testsRun": false,
+            "prCreated": false,
+            "alertsFixed": 0,
+            "testsPassed": false,
+            "branchCreated": true,
+            "alertsAnalyzed": 0,
+            "repositoryCloned": true
+          },
+          "currentTask": "Analyze vulnerabilities in src/routes/files.js (lines 17, 31, 48)",
+          "confidenceScore": null,
+          "confidenceExplanation": ""
+        },
+        "createdAt": "2026-01-26T19:34:26.583429Z",
+        "updatedAt": "2026-01-26T19:34:49.335218Z",
+        "messages": [
+          {
+            "timestamp": "2026-01-26T19:34:26.588914+00:00"
+          },
+          {
+            "timestamp": "2026-01-26T19:34:46.596624+00:00"
+          }
+        ]
       }
     ],
     "prsCreated": [
