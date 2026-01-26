@@ -815,7 +815,7 @@
         "sessionId": "devin-53921defa60a4f7097573ff432cf8287",
         "sessionUrl": "https://app.devin.ai/sessions/53921defa60a4f7097573ff432cf8287",
         "startedAt": "2026-01-26T02:42:42.498Z",
-        "sessionProgress": 80
+        "sessionProgress": 100
       },
       {
         "id": "272d10d8-49e7-45a7-9b82-1d6b2cdb2000",
@@ -1567,63 +1567,63 @@
       {
         "sessionId": "devin-53921defa60a4f7097573ff432cf8287",
         "url": "https://app.devin.ai/sessions/devin-53921defa60a4f7097573ff432cf8287",
-        "status": "working",
+        "status": "blocked",
         "batchId": "34ffc18a-22b9-4256-b931-b5ee01821666",
         "structuredOutput": {
           "fixes": [
             {
               "status": "completed",
               "filePath": "src/routes/admin.js",
-              "fixedCode": "router.get('/ping', commandRateLimiter, (req, res) => { const host = req.query.host; exec('ping -c 4 ' + host, (error, stdout, stderr) => { if (error) { res.status(500).json({ error: stderr }); } else { res.send(`<pre>${stdout}</pre>`); } }); });",
+              "fixedCode": "// TODO: Fix this security issue - Command Injection vulnerability #1\n// CWE-78: Improper Neutralization of Special Elements used in an OS Command\nrouter.get('/ping', commandRateLimiter, (req, res) => {",
               "alertNumber": 7,
               "explanation": "Added rate limiting middleware to the /ping route to prevent excessive requests.",
               "testsPassed": null,
-              "originalCode": "router.get('/ping', (req, res) => { const host = req.query.host; exec('ping -c 4 ' + host, (error, stdout, stderr) => { if (error) { res.status(500).json({ error: stderr }); } else { res.send(`<pre>${stdout}</pre>`); } }); });",
+              "originalCode": "// TODO: Fix this security issue - Command Injection vulnerability #1\n// CWE-78: Improper Neutralization of Special Elements used in an OS Command\nrouter.get('/ping', (req, res) => {",
               "confidenceScore": 0.9
             },
             {
               "status": "completed",
               "filePath": "src/routes/users.js",
-              "fixedCode": "router.get('/search', dbRateLimiter, (req, res) => { const username = req.query.username; const query = \"SELECT id, username, email FROM users WHERE username = '\" + username + \"'\"; try { const users = db.prepare(query).all(); res.json(users); } catch (error) { res.status(500).json({ error: error.message }); } });",
+              "fixedCode": "// TODO: Fix this security issue - SQL Injection vulnerability #1\n// CWE-89: Improper Neutralization of Special Elements used in an SQL Command\nrouter.get('/search', dbRateLimiter, (req, res) => {",
               "alertNumber": 6,
               "explanation": "Added rate limiting middleware to the /search route to prevent excessive requests.",
               "testsPassed": null,
-              "originalCode": "router.get('/search', (req, res) => { const username = req.query.username; const query = \"SELECT id, username, email FROM users WHERE username = '\" + username + \"'\"; try { const users = db.prepare(query).all(); res.json(users); } catch (error) { res.status(500).json({ error: error.message }); } });",
+              "originalCode": "// TODO: Fix this security issue - SQL Injection vulnerability #1\n// CWE-89: Improper Neutralization of Special Elements used in an SQL Command\nrouter.get('/search', (req, res) => {",
               "confidenceScore": 0.9
             },
             {
               "status": "completed",
               "filePath": "src/routes/files.js",
-              "fixedCode": "router.get('/safe-read', fsRateLimiter, (req, res) => { const filename = req.query.filename; if (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) { return res.status(400).json({ error: 'Invalid filename' }); } const filePath = path.join(UPLOADS_DIR, filename); try { const content = fs.readFileSync(filePath, 'utf8'); res.send(content); } catch (error) { res.status(404).json({ error: 'File not found' }); } });",
+              "fixedCode": "// TODO: Fix this security issue - Path Traversal vulnerability #3\n// CWE-22: Improper Limitation of a Pathname to a Restricted Directory\nrouter.post('/write', fsRateLimiter, (req, res) => {",
               "alertNumber": 5,
-              "explanation": "Added rate limiting middleware to the /safe-read route to prevent excessive requests.",
-              "testsPassed": null,
-              "originalCode": "router.get('/safe-read', (req, res) => { const filename = req.query.filename; if (!filename || filename.includes('..') || filename.includes('/') || filename.includes('\\\\')) { return res.status(400).json({ error: 'Invalid filename' }); } const filePath = path.join(UPLOADS_DIR, filename); try { const content = fs.readFileSync(filePath, 'utf8'); res.send(content); } catch (error) { res.status(404).json({ error: 'File not found' }); } });",
-              "confidenceScore": 0.9
-            },
-            {
-              "status": "completed",
-              "filePath": "src/routes/files.js",
-              "fixedCode": "router.post('/write', fsRateLimiter, (req, res) => { const { filename, content } = req.body; const filePath = UPLOADS_DIR + '/' + filename; try { fs.writeFileSync(filePath, content); res.json({ success: true, message: 'File written successfully' }); } catch (error) { res.status(500).json({ error: error.message }); } });",
-              "alertNumber": 4,
               "explanation": "Added rate limiting middleware to the /write route to prevent excessive requests.",
               "testsPassed": null,
-              "originalCode": "router.post('/write', (req, res) => { const { filename, content } = req.body; const filePath = UPLOADS_DIR + '/' + filename; try { fs.writeFileSync(filePath, content); res.json({ success: true, message: 'File written successfully' }); } catch (error) { res.status(500).json({ error: error.message }); } });",
+              "originalCode": "// TODO: Fix this security issue - Path Traversal vulnerability #3\n// CWE-22: Improper Limitation of a Pathname to a Restricted Directory\nrouter.post('/write', (req, res) => {",
+              "confidenceScore": 0.9
+            },
+            {
+              "status": "completed",
+              "filePath": "src/routes/files.js",
+              "fixedCode": "// TODO: Fix this security issue - Path Traversal vulnerability #2\n// CWE-22: Improper Limitation of a Pathname to a Restricted Directory\nrouter.get('/download', fsRateLimiter, (req, res) => {",
+              "alertNumber": 4,
+              "explanation": "Added rate limiting middleware to the /download route to prevent excessive requests.",
+              "testsPassed": null,
+              "originalCode": "// TODO: Fix this security issue - Path Traversal vulnerability #2\n// CWE-22: Improper Limitation of a Pathname to a Restricted Directory\nrouter.get('/download', (req, res) => {",
               "confidenceScore": 0.9
             },
             {
               "status": "completed",
               "filePath": "src/routes/users.js",
-              "fixedCode": "router.get('/find', dbRateLimiter, (req, res) => { const email = req.query.email; const query = `SELECT id, username, email FROM users WHERE email = '${email}'`; try { const users = db.prepare(query).all(); res.json(users); } catch (error) { res.status(500).json({ error: error.message }); } });",
+              "fixedCode": "// TODO: Fix this security issue - SQL Injection vulnerability #2\n// CWE-89: Improper Neutralization of Special Elements used in an SQL Command\nrouter.get('/find', dbRateLimiter, (req, res) => {",
               "alertNumber": 3,
               "explanation": "Added rate limiting middleware to the /find route to prevent excessive requests.",
               "testsPassed": null,
-              "originalCode": "router.get('/find', (req, res) => { const email = req.query.email; const query = `SELECT id, username, email FROM users WHERE email = '${email}'`; try { const users = db.prepare(query).all(); res.json(users); } catch (error) { res.status(500).json({ error: error.message }); } });",
+              "originalCode": "// TODO: Fix this security issue - SQL Injection vulnerability #2\n// CWE-89: Improper Neutralization of Special Elements used in an SQL Command\nrouter.get('/find', (req, res) => {",
               "confidenceScore": 0.9
             }
           ],
           "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/18",
-          "progress": 80,
+          "progress": 100,
           "checklist": {
             "testsRun": false,
             "prCreated": true,
@@ -1639,13 +1639,16 @@
         },
         "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/18",
         "createdAt": "2026-01-26T02:42:42.314629Z",
-        "updatedAt": "2026-01-26T02:49:18.062971Z",
+        "updatedAt": "2026-01-26T02:50:46.106578Z",
         "messages": [
           {
             "timestamp": "2026-01-26T02:42:42.320173+00:00"
           },
           {
             "timestamp": "2026-01-26T02:45:06.922963+00:00"
+          },
+          {
+            "timestamp": "2026-01-26T02:50:45.551796+00:00"
           }
         ]
       },
