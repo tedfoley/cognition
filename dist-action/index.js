@@ -1607,6 +1607,10 @@ const SESSION_START_DELAY_MS = 30000; // 30 seconds between session starts
 const RATE_LIMIT_WAIT_MS = 60000; // 60 seconds wait when rate limited
 const MAX_CONCURRENT_SESSIONS = 5; // Devin's concurrent session limit
 const WAIT_FOR_SLOT_POLL_MS = 5000; // 5 seconds between slot availability checks
+// CI check configuration
+const MAX_CI_ATTEMPTS = 2; // Allow Devin 2 attempts to fix CI failures
+const CI_POLL_INTERVAL_MS = 30000; // Check CI status every 30 seconds
+const CI_TIMEOUT_MS = 600000; // 10 minute timeout waiting for CI
 class DevinOrchestrator {
     constructor(apiKey, maxParallelSessions, repository, githubToken) {
         this.activeSessions = new Map();
@@ -1722,19 +1726,30 @@ class DevinOrchestrator {
                         if (isProgressComplete && !isStatusComplete) {
                             console.log(`Batch ${batchId} completed via progress=100 with prUrl (status was: ${updatedSession.status})`);
                         }
-                        // If completed via progress=100 with prUrl, mark as completed regardless of status
-                        batch.status = isProgressComplete ? 'completed' : (updatedSession.status === 'finished' ? 'completed' : 'failed');
-                        batch.completedAt = new Date().toISOString();
                         // Get PR URL from API response (pull_request.url) or structured output
-                        if (updatedSession.prUrl) {
-                            batch.prUrl = updatedSession.prUrl;
+                        const prUrl = updatedSession.prUrl || updatedSession.structuredOutput?.prUrl;
+                        if (prUrl) {
+                            batch.prUrl = prUrl;
                             // Update PR description with rich format
                             await this.updatePRDescription(batch, updatedSession);
+                            // Wait for CI checks to pass before terminating the session
+                            // This allows Devin to fix CI failures if they occur
+                            const ciPassed = await this.waitForCIChecks(prUrl, updatedSession.sessionId);
+                            if (ciPassed) {
+                                console.log(`[Orchestrator] CI passed for batch ${batchId}, marking as completed`);
+                                batch.status = 'completed';
+                            }
+                            else {
+                                console.log(`[Orchestrator] CI failed or timed out for batch ${batchId} after max attempts`);
+                                // Still mark as completed since PR was created, but CI didn't pass
+                                batch.status = isProgressComplete ? 'completed' : (updatedSession.status === 'finished' ? 'completed' : 'failed');
+                            }
                         }
-                        else if (updatedSession.structuredOutput?.prUrl) {
-                            batch.prUrl = updatedSession.structuredOutput.prUrl;
-                            await this.updatePRDescription(batch, updatedSession);
+                        else {
+                            // No PR URL, use original status logic
+                            batch.status = isProgressComplete ? 'completed' : (updatedSession.status === 'finished' ? 'completed' : 'failed');
                         }
+                        batch.completedAt = new Date().toISOString();
                         if (updatedSession.structuredOutput?.confidenceScore) {
                             batch.confidenceScore = updatedSession.structuredOutput.confidenceScore;
                         }
@@ -1744,6 +1759,7 @@ class DevinOrchestrator {
                         this.pollIntervals.delete(batchId);
                         this.batchStartTimes.delete(batchId);
                         // Explicitly terminate the session to free up the session slot
+                        // This now happens AFTER CI checking is complete
                         await this.cleanupSession(updatedSession.sessionId, batchId);
                         console.log(`[Orchestrator] Batch ${batchId} completed. Removed from activeSessions. Active count: ${this.activeSessions.size}, Pending: ${pendingBatches.length}`);
                         await onComplete(batch, updatedSession);
@@ -2011,6 +2027,134 @@ class DevinOrchestrator {
         else {
             console.warn(`[Orchestrator] Failed to terminate session ${sessionId}, slot may not be freed immediately`);
         }
+    }
+    /**
+     * Get the CI check status for a PR.
+     * Uses GitHub's combined status API to check all CI checks on the PR's head commit.
+     *
+     * @param prUrl - The URL of the pull request
+     * @returns 'success' if all checks pass, 'failure' if any fail, 'pending' otherwise
+     */
+    async getPRCheckStatus(prUrl) {
+        try {
+            const prNumber = this.extractPRNumber(prUrl);
+            if (!prNumber) {
+                console.warn(`[Orchestrator] Could not extract PR number from URL: ${prUrl}`);
+                return 'pending';
+            }
+            const [owner, repo] = this.repository.split('/');
+            // Get the PR to find the head SHA
+            const { data: pr } = await this.octokit.pulls.get({
+                owner,
+                repo,
+                pull_number: prNumber,
+            });
+            const headSha = pr.head.sha;
+            // Get combined status for the commit
+            const { data: combinedStatus } = await this.octokit.repos.getCombinedStatusForRef({
+                owner,
+                repo,
+                ref: headSha,
+            });
+            // Also check for check runs (GitHub Actions uses check runs, not statuses)
+            const { data: checkRuns } = await this.octokit.checks.listForRef({
+                owner,
+                repo,
+                ref: headSha,
+            });
+            // If there are no checks at all, consider it pending (checks may not have started yet)
+            if (combinedStatus.statuses.length === 0 && checkRuns.check_runs.length === 0) {
+                console.log(`[Orchestrator] No CI checks found yet for PR #${prNumber}`);
+                return 'pending';
+            }
+            // Check the combined status (for traditional CI systems)
+            const statusState = combinedStatus.state;
+            // Check the check runs (for GitHub Actions)
+            const checkRunsComplete = checkRuns.check_runs.every(run => run.status === 'completed');
+            const checkRunsAllPassed = checkRuns.check_runs.every(run => run.conclusion === 'success' || run.conclusion === 'skipped');
+            const checkRunsAnyFailed = checkRuns.check_runs.some(run => run.conclusion === 'failure' || run.conclusion === 'cancelled' || run.conclusion === 'timed_out');
+            console.log(`[Orchestrator] PR #${prNumber} CI status: combinedStatus=${statusState}, checkRunsComplete=${checkRunsComplete}, checkRunsAllPassed=${checkRunsAllPassed}`);
+            // Determine overall status
+            if (statusState === 'failure' || checkRunsAnyFailed) {
+                return 'failure';
+            }
+            if (statusState === 'success' && checkRunsComplete && checkRunsAllPassed) {
+                return 'success';
+            }
+            if (statusState === 'pending' || !checkRunsComplete) {
+                return 'pending';
+            }
+            // If combined status is success but check runs are still running
+            if (!checkRunsComplete) {
+                return 'pending';
+            }
+            // Default to success if combined status is success and all check runs passed
+            return 'success';
+        }
+        catch (error) {
+            console.error(`[Orchestrator] Error getting PR check status:`, error);
+            return 'pending';
+        }
+    }
+    /**
+     * Send a message to a Devin session asking it to fix CI failures.
+     *
+     * @param sessionId - The Devin session ID
+     * @param message - The message to send
+     */
+    async sendMessageToSession(sessionId, message) {
+        try {
+            const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}/messages`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.apiKey}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message }),
+            });
+            if (!response.ok) {
+                console.error(`[Orchestrator] Failed to send message to session ${sessionId}: ${response.status}`);
+            }
+            else {
+                console.log(`[Orchestrator] Sent message to session ${sessionId}`);
+            }
+        }
+        catch (error) {
+            console.error(`[Orchestrator] Error sending message to session ${sessionId}:`, error);
+        }
+    }
+    /**
+     * Wait for CI checks to pass on a PR, with retry attempts if CI fails.
+     * Sends messages to Devin asking it to fix CI failures.
+     *
+     * @param prUrl - The URL of the pull request
+     * @param sessionId - The Devin session ID to message if CI fails
+     * @returns true if CI passed, false if CI failed after max attempts or timeout
+     */
+    async waitForCIChecks(prUrl, sessionId) {
+        let ciAttempts = 0;
+        const ciStartTime = Date.now();
+        console.log(`[Orchestrator] Starting CI check monitoring for ${prUrl}`);
+        while (ciAttempts < MAX_CI_ATTEMPTS && Date.now() - ciStartTime < CI_TIMEOUT_MS) {
+            await this.sleep(CI_POLL_INTERVAL_MS);
+            const ciStatus = await this.getPRCheckStatus(prUrl);
+            if (ciStatus === 'success') {
+                console.log(`[Orchestrator] CI passed for ${prUrl}`);
+                return true;
+            }
+            else if (ciStatus === 'failure') {
+                ciAttempts++;
+                console.log(`[Orchestrator] CI failed for ${prUrl}, asking Devin to fix (attempt ${ciAttempts}/${MAX_CI_ATTEMPTS})`);
+                if (ciAttempts < MAX_CI_ATTEMPTS) {
+                    await this.sendMessageToSession(sessionId, 'The CI checks failed on your PR. Please review the check failures and push fixes.');
+                }
+            }
+            // If 'pending', keep polling
+        }
+        if (Date.now() - ciStartTime >= CI_TIMEOUT_MS) {
+            console.log(`[Orchestrator] CI check timeout reached for ${prUrl}`);
+        }
+        return false;
     }
     /**
      * Blocks until a session slot becomes available (activeSessions.size < maxParallelSessions).
