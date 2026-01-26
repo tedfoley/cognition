@@ -1740,23 +1740,24 @@
               "confidenceScore": 0.9
             }
           ],
-          "prUrl": null,
+          "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/33",
           "progress": 100,
           "checklist": {
             "testsRun": false,
-            "prCreated": false,
+            "prCreated": true,
             "alertsFixed": 3,
             "testsPassed": null,
             "branchCreated": true,
             "alertsAnalyzed": 3,
             "repositoryCloned": true
           },
-          "currentTask": "Implement security fixes for SQL injection vulnerabilities",
+          "currentTask": "Investigate CodeQL CI failure - alerts still showing",
           "confidenceScore": 0.9,
-          "confidenceExplanation": "The fixes are straightforward and follow established security patterns."
+          "confidenceExplanation": "The fixes implemented follow best practices for preventing SQL injection using parameterized queries."
         },
+        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/33",
         "createdAt": "2026-01-26T20:32:23.506001Z",
-        "updatedAt": "2026-01-26T20:33:18.811109Z",
+        "updatedAt": "2026-01-26T20:35:27.160668Z",
         "messages": [
           {
             "timestamp": "2026-01-26T20:32:23.510241+00:00"
