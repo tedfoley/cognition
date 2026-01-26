@@ -1716,51 +1716,52 @@
             {
               "status": "completed",
               "filePath": "src/routes/users.js",
-              "fixedCode": "const query = \"SELECT id, username, email FROM users WHERE username = ?\";",
+              "fixedCode": "// SAFE: Using parameterized query to prevent SQL injection\nconst query = \"SELECT id, username, email FROM users WHERE username = ?\";",
               "alertNumber": 20,
               "explanation": "Replaced string concatenation with a parameterized query to prevent SQL injection.",
               "testsPassed": null,
-              "originalCode": "const query = \"SELECT id, username, email FROM users WHERE username = '\" + username + \"'\";",
+              "originalCode": "// VULNERABLE: Direct string concatenation in SQL query\nconst query = \"SELECT id, username, email FROM users WHERE username = '\" + username + \"'\";",
               "confidenceScore": 0.9
             },
             {
               "status": "completed",
               "filePath": "src/routes/users.js",
-              "fixedCode": "const query = \"SELECT id, username, email FROM users WHERE email = ?\";",
+              "fixedCode": "// SAFE: Using parameterized query to prevent SQL injection\nconst query = \"SELECT id, username, email FROM users WHERE email = ?\";",
               "alertNumber": 19,
               "explanation": "Replaced template literal with a parameterized query to prevent SQL injection.",
               "testsPassed": null,
-              "originalCode": "const query = `SELECT id, username, email FROM users WHERE email = '${email}'`;",
+              "originalCode": "// VULNERABLE: Template literal with unsanitized input\nconst query = `SELECT id, username, email FROM users WHERE email = '${email}'`;",
               "confidenceScore": 0.9
             },
             {
               "status": "completed",
               "filePath": "src/routes/users.js",
-              "fixedCode": "const query = \"SELECT * FROM users WHERE username = ? AND password = ?\";",
+              "fixedCode": "// SAFE: Using parameterized query to prevent SQL injection\nconst query = \"SELECT * FROM users WHERE username = ? AND password = ?\";",
               "alertNumber": 18,
               "explanation": "Replaced string concatenation with a parameterized query to prevent SQL injection.",
               "testsPassed": null,
-              "originalCode": "const query = \"SELECT * FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\";",
+              "originalCode": "// VULNERABLE: String concatenation for authentication query\nconst query = \"SELECT * FROM users WHERE username = '\" + username + \"' AND password = '\" + password + \"'\";",
               "confidenceScore": 0.9
             }
           ],
-          "prUrl": null,
+          "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/17",
           "progress": 100,
           "checklist": {
             "testsRun": false,
-            "prCreated": false,
+            "prCreated": true,
             "alertsFixed": 3,
-            "testsPassed": false,
+            "testsPassed": null,
             "branchCreated": true,
             "alertsAnalyzed": 3,
             "repositoryCloned": true
           },
-          "currentTask": "Implement fixes for SQL injection vulnerabilities",
+          "currentTask": "Create pull request and wait for CI checks",
           "confidenceScore": 0.9,
-          "confidenceExplanation": "The fixes are straightforward and follow best practices for preventing SQL injection."
+          "confidenceExplanation": "The fixes implemented follow best practices for preventing SQL injection, and confidence is high due to the straightforward nature of the changes."
         },
+        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/17",
         "createdAt": "2026-01-26T02:46:10.203915Z",
-        "updatedAt": "2026-01-26T02:47:01.754319Z",
+        "updatedAt": "2026-01-26T02:48:57.154294Z",
         "messages": [
           {
             "timestamp": "2026-01-26T02:46:10.210463+00:00"
