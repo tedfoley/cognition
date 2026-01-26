@@ -575,19 +575,27 @@ export class DashboardPublisher {
       const isProjected = !after;
       const improvement = before.total - projectedAfter.total;
 
+      // Calculate the maximum value across all severity levels for both before and after
+      // This ensures bars are scaled proportionally relative to each other
+      const maxValue = Math.max(
+        before.critical || 0, before.high || 0, before.medium || 0, before.low || 0,
+        projectedAfter.critical || 0, projectedAfter.high || 0, projectedAfter.medium || 0, projectedAfter.low || 0,
+        1 // Minimum of 1 to avoid division by zero
+      );
+
       return (
         <div className="mb-8 bg-gray-800 rounded-lg p-6">
           <h2 className="text-xl font-bold mb-4">Security Posture</h2>
           <div className="grid grid-cols-2 gap-8">
             <div>
               <h3 className="text-gray-400 mb-2">Before</h3>
-              <SeverityBars score={before} />
+              <SeverityBars score={before} maxValue={maxValue} />
             </div>
             <div>
               <h3 className="text-gray-400 mb-2">
                 After {isProjected && <span className="text-yellow-400 text-sm">(Projected)</span>}
               </h3>
-              <SeverityBars score={projectedAfter} projected={isProjected} />
+              <SeverityBars score={projectedAfter} maxValue={maxValue} projected={isProjected} />
             </div>
           </div>
           {improvement > 0 && (
@@ -601,7 +609,7 @@ export class DashboardPublisher {
       );
     }
 
-    function SeverityBars({ score, projected }) {
+    function SeverityBars({ score, maxValue, projected }) {
       const severities = [
         { key: 'critical', label: 'Critical', color: 'bg-red-600' },
         { key: 'high', label: 'High', color: 'bg-orange-500' },
@@ -611,18 +619,22 @@ export class DashboardPublisher {
 
       return (
         <div className="space-y-2">
-          {severities.map(({ key, label, color }) => (
-            <div key={key} className="flex items-center gap-2">
-              <span className="w-16 text-sm text-gray-400">{label}</span>
-              <div className="flex-1 bg-gray-700 rounded-full h-4">
-                <div
-                  className={\`\${color} h-4 rounded-full \${projected ? 'opacity-50' : ''}\`}
-                  style={{ width: \`\${Math.min(score[key] * 10, 100)}%\` }}
-                ></div>
+          {severities.map(({ key, label, color }) => {
+            // Scale bar width proportionally to the maximum value across all bars
+            const barWidth = maxValue > 0 ? (score[key] / maxValue) * 100 : 0;
+            return (
+              <div key={key} className="flex items-center gap-2">
+                <span className="w-16 text-sm text-gray-400">{label}</span>
+                <div className="flex-1 bg-gray-700 rounded-full h-4">
+                  <div
+                    className={\`\${color} h-4 rounded-full \${projected ? 'opacity-50' : ''}\`}
+                    style={{ width: \`\${barWidth}%\` }}
+                  ></div>
+                </div>
+                <span className="w-8 text-right">{score[key]}</span>
               </div>
-              <span className="w-8 text-right">{score[key]}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       );
     }
