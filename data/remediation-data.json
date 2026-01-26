@@ -969,7 +969,8 @@
         "status": "in_progress",
         "sessionId": "devin-445d05ffb5be4f81a74bf8a98e186c99",
         "sessionUrl": "https://app.devin.ai/sessions/445d05ffb5be4f81a74bf8a98e186c99",
-        "startedAt": "2026-01-26T02:44:07.170Z"
+        "startedAt": "2026-01-26T02:44:07.170Z",
+        "sessionProgress": 0
       },
       {
         "id": "3ab2ef31-fcbb-4d40-b737-5c78c2ec1530",
@@ -1552,6 +1553,20 @@
         "messages": [
           {
             "timestamp": "2026-01-26T02:42:42.320173+00:00"
+          }
+        ]
+      },
+      {
+        "sessionId": "devin-445d05ffb5be4f81a74bf8a98e186c99",
+        "url": "https://app.devin.ai/sessions/devin-445d05ffb5be4f81a74bf8a98e186c99",
+        "status": "pending",
+        "batchId": "272d10d8-49e7-45a7-9b82-1d6b2cdb2000",
+        "structuredOutput": null,
+        "createdAt": "2026-01-26T02:44:07.053442Z",
+        "updatedAt": "2026-01-26T02:44:08.397265Z",
+        "messages": [
+          {
+            "timestamp": "2026-01-26T02:44:07.059555+00:00"
           }
         ]
       }
