@@ -74,6 +74,7 @@ export interface AlertBatch {
   confidenceScore?: number;
   startedAt?: string;
   completedAt?: string;
+  sessionProgress?: number; // Progress percentage from Devin session (0-100)
 }
 
 export interface DevinSession {

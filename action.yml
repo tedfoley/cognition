@@ -22,9 +22,9 @@ inputs:
     required: false
     default: '5'
   max_parallel_sessions:
-    description: 'Maximum number of parallel Devin sessions'
+    description: 'Maximum number of parallel Devin sessions (default: 2, max: 4 to stay under Devin concurrent limit)'
     required: false
-    default: '3'
+    default: '2'
   min_confidence_threshold:
     description: 'Minimum confidence score to proceed with fix (0.0-1.0)'
     required: false

@@ -19,6 +19,11 @@ const MAX_POLL_RETRIES = 5;              // Max consecutive failures before givi
 const MAX_TOTAL_POLL_TIME_MS = 3600000;  // 1 hour max total polling time
 const MAX_BATCH_TIME_MS = 1800000;       // 30 minutes max per batch
 
+// Rate limiting and session management
+const SESSION_START_DELAY_MS = 30000;    // 30 seconds between session starts
+const RATE_LIMIT_WAIT_MS = 60000;        // 60 seconds wait when rate limited
+const MAX_CONCURRENT_SESSIONS = 5;       // Devin's concurrent session limit
+
 // Devin API response interfaces
 interface DevinCreateSessionResponse {
   session_id: string;
@@ -38,6 +43,12 @@ interface DevinSessionResponse {
   title?: string;
 }
 
+interface StartSessionResult {
+  session: DevinSession | null;
+  rateLimited: boolean;
+  sessionLimitHit: boolean;
+}
+
 export class DevinOrchestrator {
   private apiKey: string;
   private maxParallelSessions: number;
@@ -48,13 +59,17 @@ export class DevinOrchestrator {
   private pollRetries: Map<string, number> = new Map();
   private pollIntervals: Map<string, number> = new Map();
   private batchStartTimes: Map<string, number> = new Map();
+  private lastSessionStartTime: number = 0;
+  private rateLimitHits: number = 0;
 
   constructor(apiKey: string, maxParallelSessions: number, repository: string, githubToken: string) {
     this.apiKey = apiKey;
-    this.maxParallelSessions = maxParallelSessions;
+    // Use the smaller of configured max and conservative limit to avoid hitting Devin's session limit
+    this.maxParallelSessions = Math.min(maxParallelSessions, MAX_CONCURRENT_SESSIONS - 1);
     this.repository = repository;
     this.octokit = new Octokit({ auth: githubToken });
     this.prGenerator = new PRGenerator(repository);
+    console.log(`[Orchestrator] Initialized with maxParallelSessions=${this.maxParallelSessions} (configured: ${maxParallelSessions}, limit: ${MAX_CONCURRENT_SESSIONS})`);
   }
 
   async processBatches(
@@ -89,23 +104,46 @@ export class DevinOrchestrator {
         this.activeSessions.size < this.maxParallelSessions &&
         pendingBatches.length > 0
       ) {
+        // Enforce delay between session starts to avoid rate limiting
+        const timeSinceLastStart = Date.now() - this.lastSessionStartTime;
+        if (this.lastSessionStartTime > 0 && timeSinceLastStart < SESSION_START_DELAY_MS) {
+          const waitTime = SESSION_START_DELAY_MS - timeSinceLastStart;
+          console.log(`[Orchestrator] Waiting ${waitTime}ms before starting next session (rate limit prevention)`);
+          await this.sleep(waitTime);
+        }
+
         console.log(`[Orchestrator] Starting new session: activeSessions=${this.activeSessions.size} < maxParallel=${this.maxParallelSessions}, pendingBatches=${pendingBatches.length}`);
         const batch = pendingBatches.shift()!;
         console.log(`[Orchestrator] Starting batch ${batch.id} (${batch.groupKey})`);
-        const session = await this.startSession(batch);
+        const result = await this.startSessionWithRetry(batch);
         
-        if (session) {
-          this.activeSessions.set(batch.id, session);
+        if (result.rateLimited || result.sessionLimitHit) {
+          // Re-queue the batch instead of failing
+          pendingBatches.unshift(batch);
+          console.log(`[Orchestrator] Re-queued batch ${batch.id} due to ${result.rateLimited ? 'rate limiting' : 'session limit'}`);
+          this.rateLimitHits++;
+          
+          // If we've hit rate limits multiple times, reduce parallel sessions
+          if (this.rateLimitHits >= 3 && this.maxParallelSessions > 1) {
+            this.maxParallelSessions--;
+            console.log(`[Orchestrator] Reduced maxParallelSessions to ${this.maxParallelSessions} due to repeated rate limits`);
+          }
+          
+          // Break out of the inner loop to let existing sessions progress
+          break;
+        } else if (result.session) {
+          this.activeSessions.set(batch.id, result.session);
           this.pollRetries.set(batch.id, 0);
           this.pollIntervals.set(batch.id, INITIAL_POLL_INTERVAL_MS);
           this.batchStartTimes.set(batch.id, Date.now());
+          this.lastSessionStartTime = Date.now();
           batch.status = 'in_progress';
-          batch.sessionId = session.sessionId;
-          batch.sessionUrl = session.url;
+          batch.sessionId = result.session.sessionId;
+          batch.sessionUrl = result.session.url;
           batch.startedAt = new Date().toISOString();
           console.log(`[Orchestrator] Added batch ${batch.id} to activeSessions. Active count: ${this.activeSessions.size}`);
         } else {
-          console.log(`[Orchestrator] Failed to start session for batch ${batch.id}`);
+          console.log(`[Orchestrator] Failed to start session for batch ${batch.id}, will not re-queue`);
         }
       }
 
@@ -256,7 +294,7 @@ export class DevinOrchestrator {
     return match ? parseInt(match[1], 10) : null;
   }
 
-  async startSession(batch: AlertBatch): Promise<DevinSession | null> {
+  private async startSessionWithRetry(batch: AlertBatch): Promise<StartSessionResult> {
     const prompt = this.buildPrompt(batch);
     
     try {
@@ -283,10 +321,19 @@ export class DevinOrchestrator {
         }
         
         if (response.status === 429) {
-          console.error(`Rate limit exceeded for Devin API. Waiting before retry...`);
-          // Wait 60 seconds before allowing retry
-          await this.sleep(60000);
-          return null;
+          console.warn(`Rate limited when starting batch ${batch.id}. Will re-queue.`);
+          await this.sleep(RATE_LIMIT_WAIT_MS);
+          return { session: null, rateLimited: true, sessionLimitHit: false };
+        }
+        
+        // Check for concurrent session limit error
+        if (response.status === 400 || response.status === 403) {
+          const lowerError = errorText.toLowerCase();
+          if (lowerError.includes('concurrent session limit') || lowerError.includes('session limit')) {
+            console.warn(`Concurrent session limit hit when starting batch ${batch.id}. Will re-queue.`);
+            await this.sleep(RATE_LIMIT_WAIT_MS);
+            return { session: null, rateLimited: false, sessionLimitHit: true };
+          }
         }
         
         if (response.status === 403) {
@@ -295,12 +342,12 @@ export class DevinOrchestrator {
         }
         
         console.error(`Failed to create session for batch ${batch.id}: ${response.status} - ${errorText}`);
-        return null;
+        return { session: null, rateLimited: false, sessionLimitHit: false };
       }
 
       const data = await response.json() as DevinCreateSessionResponse;
       
-      return {
+      const session: DevinSession = {
         sessionId: data.session_id,
         url: data.url,
         status: 'working' as SessionStatus,
@@ -309,13 +356,20 @@ export class DevinOrchestrator {
         updatedAt: new Date().toISOString(),
         messages: [],
       };
+      
+      return { session, rateLimited: false, sessionLimitHit: false };
     } catch (error) {
       if (error instanceof Error && (error.message.includes('authentication') || error.message.includes('forbidden'))) {
         throw error; // Re-throw auth errors to stop the orchestrator
       }
       console.error(`Error creating session for batch ${batch.id}:`, error);
-      return null;
+      return { session: null, rateLimited: false, sessionLimitHit: false };
     }
+  }
+
+  async startSession(batch: AlertBatch): Promise<DevinSession | null> {
+    const result = await this.startSessionWithRetry(batch);
+    return result.session;
   }
 
   private async pollSessionWithBackoff(sessionId: string, batchId: string): Promise<DevinSession | null> {
