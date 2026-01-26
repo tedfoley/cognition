@@ -1320,12 +1320,17 @@
       },
       {
         "sessionId": "devin-9295d42a576341a5a743ce0b06af2432",
-        "url": "https://app.devin.ai/sessions/9295d42a576341a5a743ce0b06af2432",
-        "status": "working",
+        "url": "https://app.devin.ai/sessions/devin-9295d42a576341a5a743ce0b06af2432",
+        "status": "pending",
         "batchId": "314cfb5d-75b0-41b8-bf48-855bc43f4480",
-        "createdAt": "2026-01-26T20:00:06.931Z",
-        "updatedAt": "2026-01-26T20:00:06.931Z",
-        "messages": []
+        "structuredOutput": null,
+        "createdAt": "2026-01-26T20:00:06.755403Z",
+        "updatedAt": "2026-01-26T20:00:08.093083Z",
+        "messages": [
+          {
+            "timestamp": "2026-01-26T20:00:06.761109+00:00"
+          }
+        ]
       },
       {
         "sessionId": "devin-e332fe3e4598469089d661ec0d6d4f2d",
