@@ -966,7 +966,10 @@
         "groupKey": "high-CWE-022",
         "severity": "high",
         "priority": 86,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "devin-445d05ffb5be4f81a74bf8a98e186c99",
+        "sessionUrl": "https://app.devin.ai/sessions/445d05ffb5be4f81a74bf8a98e186c99",
+        "startedAt": "2026-01-26T02:44:07.170Z"
       },
       {
         "id": "3ab2ef31-fcbb-4d40-b737-5c78c2ec1530",
