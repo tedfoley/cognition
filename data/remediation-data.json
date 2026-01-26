@@ -18,7 +18,7 @@
       "dryRun": false
     },
     "alertsTotal": 27,
-    "alertsProcessed": 25,
+    "alertsProcessed": 26,
     "batches": [
       {
         "id": "9b1e2a96-cfd8-4fb4-add7-bfe83326de39",
@@ -1285,11 +1285,14 @@
         "groupKey": "high-CWE-079",
         "severity": "high",
         "priority": 82,
-        "status": "in_progress",
+        "status": "completed",
         "sessionId": "devin-cba6d86d760d4a89933e4a645e38dc42",
         "sessionUrl": "https://app.devin.ai/sessions/cba6d86d760d4a89933e4a645e38dc42",
         "startedAt": "2026-01-26T02:49:27.837Z",
-        "sessionProgress": 100
+        "sessionProgress": 100,
+        "completedAt": "2026-01-26T02:51:44.390Z",
+        "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/20",
+        "confidenceScore": 0.5800000000000001
       },
       {
         "id": "a0778fb2-7dad-44db-a10c-ff69b7339f9b",
@@ -1911,7 +1914,8 @@
       "https://github.com/tedfoley/vulnerable-demo-app/pull/13",
       "https://github.com/tedfoley/vulnerable-demo-app/pull/17",
       "https://github.com/tedfoley/vulnerable-demo-app/pull/18",
-      "https://github.com/tedfoley/vulnerable-demo-app/pull/19"
+      "https://github.com/tedfoley/vulnerable-demo-app/pull/19",
+      "https://github.com/tedfoley/vulnerable-demo-app/pull/20"
     ],
     "securityPosture": {
       "before": {
@@ -1931,7 +1935,7 @@
     }
   },
   "learningStats": {
-    "totalRecords": 13,
+    "totalRecords": 14,
     "overallSuccessRate": 1,
     "topCWEs": [
       {
@@ -1947,6 +1951,11 @@
       {
         "cwe": "CWE-089",
         "count": 3,
+        "successRate": 1
+      },
+      {
+        "cwe": "CWE-079",
+        "count": 1,
         "successRate": 1
       }
     ]
