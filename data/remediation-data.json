@@ -1306,12 +1306,17 @@
     "sessions": [
       {
         "sessionId": "devin-d61286829adb4df28412ebf101ff9be5",
-        "url": "https://app.devin.ai/sessions/d61286829adb4df28412ebf101ff9be5",
-        "status": "working",
+        "url": "https://app.devin.ai/sessions/devin-d61286829adb4df28412ebf101ff9be5",
+        "status": "pending",
         "batchId": "1317e9ca-bff3-40ea-b054-4268f72fdf0f",
-        "createdAt": "2026-01-26T19:59:34.667Z",
-        "updatedAt": "2026-01-26T19:59:34.667Z",
-        "messages": []
+        "structuredOutput": null,
+        "createdAt": "2026-01-26T19:59:34.521478Z",
+        "updatedAt": "2026-01-26T19:59:39.192835Z",
+        "messages": [
+          {
+            "timestamp": "2026-01-26T19:59:34.526104+00:00"
+          }
+        ]
       },
       {
         "sessionId": "devin-9295d42a576341a5a743ce0b06af2432",
