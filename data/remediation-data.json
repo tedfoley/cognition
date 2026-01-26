@@ -1707,7 +1707,54 @@
         "url": "https://app.devin.ai/sessions/devin-91807621ca02466fbfa24d4fc99f3b72",
         "status": "working",
         "batchId": "3ab2ef31-fcbb-4d40-b737-5c78c2ec1530",
-        "structuredOutput": null,
+        "structuredOutput": {
+          "fixes": [
+            {
+              "status": "pending",
+              "filePath": "src/routes/users.js",
+              "fixedCode": "",
+              "alertNumber": 20,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/users.js",
+              "fixedCode": "",
+              "alertNumber": 19,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            },
+            {
+              "status": "pending",
+              "filePath": "src/routes/users.js",
+              "fixedCode": "",
+              "alertNumber": 18,
+              "explanation": "",
+              "testsPassed": null,
+              "originalCode": "",
+              "confidenceScore": null
+            }
+          ],
+          "prUrl": null,
+          "progress": 0,
+          "checklist": {
+            "testsRun": false,
+            "prCreated": false,
+            "alertsFixed": 0,
+            "testsPassed": false,
+            "branchCreated": true,
+            "alertsAnalyzed": 0,
+            "repositoryCloned": true
+          },
+          "currentTask": "Analyze SQL injection vulnerabilities in src/routes/users.js (lines 32, 48, 64)",
+          "confidenceScore": null,
+          "confidenceExplanation": ""
+        },
         "createdAt": "2026-01-26T02:46:10.203915Z",
         "updatedAt": "2026-01-26T02:47:01.754319Z",
         "messages": [
