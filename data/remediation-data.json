@@ -1230,7 +1230,7 @@
         "sessionId": "devin-08e1b1c610464f859afe44aaba44e235",
         "sessionUrl": "https://app.devin.ai/sessions/08e1b1c610464f859afe44aaba44e235",
         "startedAt": "2026-01-26T02:47:34.227Z",
-        "sessionProgress": 100
+        "sessionProgress": 80
       },
       {
         "id": "585023b6-60f0-4b3d-8cc7-bf596ddf23b1",
@@ -1814,7 +1814,7 @@
             }
           ],
           "prUrl": null,
-          "progress": 100,
+          "progress": 80,
           "checklist": {
             "testsRun": false,
             "prCreated": false,
