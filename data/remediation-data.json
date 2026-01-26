@@ -1905,12 +1905,12 @@
             {
               "status": "completed",
               "filePath": "src/routes/files.js",
-              "fixedCode": "// FIXED: Path Traversal vulnerability - CWE-22, CWE-434, CWE-912\nconst filePath = path.join(UPLOADS_DIR, filename);\nfs.writeFileSync(resolvedPath, String(content));",
+              "fixedCode": "// FIXED: Path Traversal vulnerability - CWE-22, CWE-434, CWE-912\n// Validate filename to prevent path traversal attacks\nif (!filename || typeof filename !== 'string') {\n  return res.status(400).json({ error: 'Filename is required' });\n}\nif (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {\n  return res.status(400).json({ error: 'Invalid filename: path traversal not allowed' });\n}\nconst filePath = path.join(UPLOADS_DIR, filename);\n",
               "alertNumber": 27,
-              "explanation": "The fix includes validation of the filename to prevent path traversal and ensures that the resolved path is within the UPLOADS_DIR. Additionally, it validates that content is provided before writing to the file.",
+              "explanation": "The fix adds validation for the filename to prevent path traversal attacks and ensures that the file path is constructed safely using path.join().",
               "testsPassed": null,
-              "originalCode": "const filePath = UPLOADS_DIR + '/' + filename;\nfs.writeFileSync(filePath, content);",
-              "confidenceScore": 0.9
+              "originalCode": "// VULNERABLE: Writing to user-controlled path\nconst filePath = UPLOADS_DIR + '/' + filename;\n",
+              "confidenceScore": 0.8
             }
           ],
           "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/21",
@@ -1924,9 +1924,9 @@
             "alertsAnalyzed": 1,
             "repositoryCloned": true
           },
-          "currentTask": "Create PR with security fix",
-          "confidenceScore": 0.9,
-          "confidenceExplanation": "The fix follows established security patterns for input validation and path handling, which gives a high level of confidence in its effectiveness."
+          "currentTask": "Fix remaining CodeQL alert - content validation needed",
+          "confidenceScore": 0.8,
+          "confidenceExplanation": "The fix addresses the path traversal vulnerability effectively, but further validation of the content is needed to fully resolve the CodeQL alert."
         },
         "prUrl": "https://github.com/tedfoley/vulnerable-demo-app/pull/21",
         "createdAt": "2026-01-26T02:51:09.289308Z",
