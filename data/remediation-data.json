@@ -1898,14 +1898,17 @@
       {
         "sessionId": "devin-e2458fffd29245509c6269e28fb5dc58",
         "url": "https://app.devin.ai/sessions/devin-e2458fffd29245509c6269e28fb5dc58",
-        "status": "pending",
+        "status": "working",
         "batchId": "a0778fb2-7dad-44db-a10c-ff69b7339f9b",
         "structuredOutput": null,
         "createdAt": "2026-01-26T02:51:09.289308Z",
-        "updatedAt": "2026-01-26T02:51:22.935561Z",
+        "updatedAt": "2026-01-26T02:51:43.802216Z",
         "messages": [
           {
             "timestamp": "2026-01-26T02:51:09.296383+00:00"
+          },
+          {
+            "timestamp": "2026-01-26T02:51:42.978727+00:00"
           }
         ]
       }
