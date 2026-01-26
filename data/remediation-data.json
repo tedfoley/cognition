@@ -204,7 +204,7 @@
         "sessionId": "devin-74dec295f2d747e5bfd5fcb33b58e1de",
         "sessionUrl": "https://app.devin.ai/sessions/74dec295f2d747e5bfd5fcb33b58e1de",
         "startedAt": "2026-01-26T19:10:07.800Z",
-        "sessionProgress": 0
+        "sessionProgress": 20
       },
       {
         "id": "0e5db8d2-b4ba-42c4-bab7-10511fd900d8",
@@ -1353,7 +1353,7 @@
             }
           ],
           "prUrl": null,
-          "progress": 0,
+          "progress": 20,
           "checklist": {
             "testsRun": false,
             "prCreated": false,
@@ -1363,7 +1363,7 @@
             "alertsAnalyzed": 0,
             "repositoryCloned": true
           },
-          "currentTask": "Clone repository and create branch fix/codeql-critical-CWE-078-1769454607054",
+          "currentTask": "Analyze all 4 command-line injection vulnerabilities in src/routes/admin.js",
           "confidenceScore": null,
           "confidenceExplanation": ""
         },
